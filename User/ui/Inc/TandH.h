@@ -42,11 +42,11 @@ void TandH_draw_function(void *context);
 
 void TandH_key_handler(menu_item_t *item, uint8_t key_event);
 
-void TandH_update_dht11(void);
+void TandH_update_dht11(void *context);
 
-TandH_state_t *TandH_get_state(void);
+TandH_state_t *TandH_get_state(void *context);
 
-void TandH_refresh_display(void);
+void TandH_refresh_display(void *context);
 
 void TandH_on_enter(menu_item_t *item);
 
