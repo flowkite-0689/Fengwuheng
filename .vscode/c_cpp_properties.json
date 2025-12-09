@@ -1,0 +1,31 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/User/FreeRTOS",
+                "${workspaceFolder}/User/FreeRTOS/include",
+                "${workspaceFolder}/Libraries",
+                "${workspaceFolder}/Libraries/CMSIS",
+                "${workspaceFolder}/User",
+                "${workspaceFolder}/User/Hardware",
+                "${workspaceFolder}/User/FreeRTOS/portable/RVDS/ARM_CM3",
+                "${workspaceFolder}/User/Hardware/OLED",
+                "${workspaceFolder}/User/ui/Inc",
+                "${workspaceFolder}/User/Hardware/MPU6050",
+                "${workspaceFolder}/User/alarm",
+                "${workspaceFolder}/User/alarm/Inc"
+            ],
+            "defines": [
+                "USE_STDPERIPH_DRIVER"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64",
+            "configurationProvider": "ms-vscode.cmake-tools"
+        }
+    ],
+    "version": 4
+}
