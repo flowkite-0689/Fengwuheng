@@ -39,12 +39,19 @@ int main(void)
     TIM2_Delay_Init();
     debug_init();
     OLED_Init();
-    OLED_ShowPicture(32, 0, 64, 64, gImage_bg, 1);
+    // while (1)
+    // {
+    //   OLED_Show_many_Tupian(tjbg,8,5);
+    //   Delay_ms(10);
+    // }
+    
+    
+
     OLED_Refresh();
     Key_Init();
     Beep_Init();
     
-    BEEP_Buzz(100);
+    BEEP_Buzz(10);
    
     if(BEEP==1){
         printf("beep111111\n\n\n\nn\n\n\n\n\n");

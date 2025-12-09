@@ -623,7 +623,7 @@ int game2048_get_move_direction(game2048_state_t *state)
         return -1;
     }
     
-    static int last_direction = -1;
+    
     static int need_reset = 0;
     int current_direction = -1;
     
@@ -649,7 +649,7 @@ int game2048_get_move_direction(game2048_state_t *state)
         if ((state->last_angle_x < reset_threshold && state->last_angle_x > -reset_threshold) && 
             (state->last_angle_y < reset_threshold && state->last_angle_y > -reset_threshold)) {
             need_reset = 0;
-            last_direction = -1;
+            
         } else {
             return -1;
         }

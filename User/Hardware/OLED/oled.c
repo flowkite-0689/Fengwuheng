@@ -393,93 +393,93 @@ void OLED_ShowNum(uint8_t x, uint8_t y, u32 num, uint8_t len, uint8_t size1, uin
 // x,y:起点坐标
 // num:汉字对应的序号
 // mode:0,反色显示;1,正常显示
-void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t num, uint8_t size1, uint8_t mode)
-{
-	uint8_t m, temp;
-	uint8_t x0 = x, y0 = y;
-	uint16_t i, size3 = (size1 / 8 + ((size1 % 8) ? 1 : 0)) * size1; // 得到字体一个字符对应点阵集所占的字节数
-	for (i = 0; i < size3; i++)
-	{
-		if (size1 == 16)
-		{
-			temp = Hzk1[num][i];
-		} // 调用16*16字体
-		else if (size1 == 24)
-		{
-			temp = Hzk2[num][i];
-		} // 调用24*24字体
-		else if (size1 == 32)
-		{
-			temp = Hzk3[num][i];
-		} // 调用32*32字体
-		else if (size1 == 64)
-		{
-			temp = Hzk4[num][i];
-		} // 调用64*64字体
-		else
-			return;
-		for (m = 0; m < 8; m++)
-		{
-			if (temp & 0x01)
-				OLED_DrawPoint(x, y, mode);
-			else
-				OLED_DrawPoint(x, y, !mode);
-			temp >>= 1;
-			y++;
-		}
-		x++;
-		if ((x - x0) == size1)
-		{
-			x = x0;
-			y0 = y0 + 8;
-		}
-		y = y0;
-	}
-}
+//void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t num, uint8_t size1, uint8_t mode)
+//{
+//	uint8_t m, temp;
+//	uint8_t x0 = x, y0 = y;
+//	uint16_t i, size3 = (size1 / 8 + ((size1 % 8) ? 1 : 0)) * size1; // 得到字体一个字符对应点阵集所占的字节数
+//	for (i = 0; i < size3; i++)
+//	{
+//		if (size1 == 16)
+//		{
+//			temp = Hzk1[num][i];
+//		} // 调用16*16字体
+//		else if (size1 == 24)
+//		{
+//			temp = Hzk2[num][i];
+//		} // 调用24*24字体
+//		else if (size1 == 32)
+//		{
+//			temp = Hzk3[num][i];
+//		} // 调用32*32字体
+//		else if (size1 == 64)
+//		{
+//			temp = Hzk4[num][i];
+//		} // 调用64*64字体
+//		else
+//			return;
+//		for (m = 0; m < 8; m++)
+//		{
+//			if (temp & 0x01)
+//				OLED_DrawPoint(x, y, mode);
+//			else
+//				OLED_DrawPoint(x, y, !mode);
+//			temp >>= 1;
+//			y++;
+//		}
+//		x++;
+//		if ((x - x0) == size1)
+//		{
+//			x = x0;
+//			y0 = y0 + 8;
+//		}
+//		y = y0;
+//	}
+//}
 
 // num 显示汉字的个数
 // space 每一遍显示的间隔
 // mode:0,反色显示;1,正常显示
-void OLED_ScrollDisplay(uint8_t num, uint8_t space, uint8_t mode)
-{
-	uint8_t i, n, t = 0, m = 0, r;
-	while (1)
-	{
-		if (m == 0)
-		{
-			OLED_ShowChinese(128, 24, t, 16, mode); // 写入一个汉字保存在OLED_GRAM[][]数组中
-			t++;
-		}
-		if (t == num)
-		{
-			for (r = 0; r < 16 * space; r++) // 显示间隔
-			{
-				for (i = 1; i < 144; i++)
-				{
-					for (n = 0; n < 8; n++)
-					{
-						OLED_GRAM[i - 1][n] = OLED_GRAM[i][n];
-					}
-				}
-				OLED_Refresh();
-			}
-			t = 0;
-		}
-		m++;
-		if (m == 16)
-		{
-			m = 0;
-		}
-		for (i = 1; i < 144; i++) // 实现左移
-		{
-			for (n = 0; n < 8; n++)
-			{
-				OLED_GRAM[i - 1][n] = OLED_GRAM[i][n];
-			}
-		}
-		OLED_Refresh();
-	}
-}
+//void OLED_ScrollDisplay(uint8_t num, uint8_t space, uint8_t mode)
+//{
+//	uint8_t i, n, t = 0, m = 0, r;
+//	while (1)
+//	{
+//		if (m == 0)
+//		{
+//			OLED_ShowChinese(128, 24, t, 16, mode); // 写入一个汉字保存在OLED_GRAM[][]数组中
+//			t++;
+//		}
+//		if (t == num)
+//		{
+//			for (r = 0; r < 16 * space; r++) // 显示间隔
+//			{
+//				for (i = 1; i < 144; i++)
+//				{
+//					for (n = 0; n < 8; n++)
+//					{
+//						OLED_GRAM[i - 1][n] = OLED_GRAM[i][n];
+//					}
+//				}
+//				OLED_Refresh();
+//			}
+//			t = 0;
+//		}
+//		m++;
+//		if (m == 16)
+//		{
+//			m = 0;
+//		}
+//		for (i = 1; i < 144; i++) // 实现左移
+//		{
+//			for (n = 0; n < 8; n++)
+//			{
+//				OLED_GRAM[i - 1][n] = OLED_GRAM[i][n];
+//			}
+//		}
+//		OLED_Refresh();
+//	}
+//}
 
 // x,y：起点坐标
 // sizex,sizey,图片长宽

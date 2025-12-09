@@ -290,3 +290,22 @@ void OLED_DrawProgressBar(
 
     // 无需重复调用 OLED_Set_Dirty_Area()
 }
+void OLED_Show_many_Tupian(const unsigned char *pic_you_want_show[],int size_pic_list,int count)
+{   
+
+    for (int i = 0; i < count; i++)
+    {
+        for (int i = 0; i < size_pic_list; i++)
+    {
+         OLED_ShowPicture(32, 0, 64, 64, pic_you_want_show[i], 1);
+         OLED_Refresh();
+         delay_ms(2);
+    }
+    
+    
+    }
+     OLED_ShowPicture(32, 0, 64, 64, pic_you_want_show[0], 1);
+    
+   
+      
+}

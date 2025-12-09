@@ -28,8 +28,8 @@ void OLED_DrawCircle(uint8_t x, uint8_t y, uint8_t r);
 void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t chr, uint8_t size1, uint8_t mode);
 void OLED_ShowString(uint8_t x, uint8_t y, uint8_t *chr, uint8_t size1, uint8_t mode);
 void OLED_ShowNum(uint8_t x, uint8_t y, u32 num, uint8_t len, uint8_t size1, uint8_t mode);
-void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t num, uint8_t size1, uint8_t mode);
-void OLED_ScrollDisplay(uint8_t num, uint8_t space, uint8_t mode);
+// void OLED_ShowChinese(uint8_t x, uint8_t y, uint8_t num, uint8_t size1, uint8_t mode);
+// void OLED_ScrollDisplay(uint8_t num, uint8_t space, uint8_t mode);
 void OLED_ShowPicture(uint8_t x, uint8_t y, uint8_t sizex, uint8_t sizey, const uint8_t BMP[], uint8_t mode);
 void OLED_Init(void);
 #endif

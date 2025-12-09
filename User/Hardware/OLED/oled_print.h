@@ -7,6 +7,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include "logo.h"
+#include "Delay.h"
 // OLED显示区域定义
 #define OLED_LINE_HEIGHT 16  // 每行高度（像素）
 #define OLED_MAX_LINES   4   // 最大行数（128x64像素屏幕）
@@ -63,4 +64,7 @@ void OLED_DrawProgressBar(
 ,
     uint8_t point_mode);
 void OLED_Clear_Rect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2);
+
+
+void OLED_Show_many_Tupian(const unsigned char *pic_you_want_show[],int size_pic_list,int count);
 #endif // __OLED_PRINT_H__
