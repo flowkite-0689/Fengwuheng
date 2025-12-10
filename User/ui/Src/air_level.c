@@ -4,7 +4,7 @@
 // ==================================
 // 静态函数声明
 // ==================================
-static void air_level_display_info_wrapper(void *context);
+//static void air_level_display_info_wrapper(void *context);
 static void air_level_init_sensor_data(air_level_state_t *state);
 static void air_level_cleanup_sensor_data(air_level_state_t *state);
 
@@ -81,11 +81,11 @@ void air_level_key_handler(menu_item_t *item, uint8_t key_event)
     switch (key_event) {
         case MENU_EVENT_KEY_UP:
             // KEY0 - 可以用来切换显示模式
-            printf("Air Level: KEY0 pressed - Toggle mode\r\n");
-            if (state) {
-                state->display_mode = (state->display_mode + 1) % 2; // 假设有2种显示模式
-                state->need_refresh = 1;
-            }
+//            printf("Air Level: KEY0 pressed - Toggle mode\r\n");
+//            if (state) {
+//                state->display_mode = (state->display_mode + 1) % 2; // 假设有2种显示模式
+//                state->need_refresh = 1;
+//            }
             break;
             
         case MENU_EVENT_KEY_DOWN:
@@ -220,7 +220,7 @@ static void air_level_init_sensor_data(air_level_state_t *state)
     state->need_refresh = 1;
     state->last_update = xTaskGetTickCount();
     state->sensor_ready = 0;
-    state->display_mode = 0; // 默认显示模式
+//    state->display_mode = 0; // 默认显示模式
     
     // 初始化文本缓冲区
     strcpy(state->direction_text, "---");
@@ -357,19 +357,19 @@ void air_level_display_info(air_level_state_t *state)
     }
     
     // 根据显示模式切换显示内容
-    if (state->display_mode == 0) {
+//    if (state->display_mode == 0) {
         // 模式0：详细信息
         OLED_Printf_Line(0, "Direction: %s", state->direction_text);
         OLED_Printf_Line(1, "Angle: %s", state->angle_text);
         OLED_Printf_Line(2, "X: %0.1f^", state->last_angle_x);
         OLED_Printf_Line(3, "Y: %0.1f^", state->last_angle_y);
-    } else {
-        // 模式1：简洁模式
-        OLED_Printf_Line(0, "Air Level");
-        OLED_Printf_Line(1, "Dir: %s", state->direction_text);
-        OLED_Printf_Line(2, "X:%0.1f^ Y:%0.1f^", state->last_angle_x, state->last_angle_y);
-        OLED_Printf_Line(3, "KEY0:Mode KEY1:Reset");
-    }
+//    } else {
+//        // 模式1：简洁模式
+//        OLED_Printf_Line(0, "Air Level");
+//        OLED_Printf_Line(1, "Dir: %s", state->direction_text);
+//        OLED_Printf_Line(2, "X:%0.1f^ Y:%0.1f^", state->last_angle_x, state->last_angle_y);
+//        OLED_Printf_Line(3, "KEY0:Mode KEY1:Reset");
+//    }
     
     // 绘制水平指示器（仅在传感器就绪时）
     // 垂直进度条显示Y轴倾斜（左右倾斜）
@@ -384,8 +384,8 @@ void air_level_display_info(air_level_state_t *state)
 /**
  * @brief 静态显示函数包装器（供内部使用）
  */
-static void air_level_display_info_wrapper(void *context)
-{
-    air_level_display_info((air_level_state_t *)context);
-}
+//static void air_level_display_info_wrapper(void *context)
+//{
+//    air_level_display_info((air_level_state_t *)context);
+//}
 

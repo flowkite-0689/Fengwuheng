@@ -29,11 +29,11 @@
 #define AIR_LEVEL_ANGLE_TEXT_LEN     16
 
 // 显示模式
-typedef enum {
-    DISPLAY_MODE_DETAIL = 0,    // 详细模式
-    DISPLAY_MODE_SIMPLE = 1,    // 简洁模式
-    DISPLAY_MODE_MAX
-} air_display_mode_t;
+// typedef enum {
+//     DISPLAY_MODE_DETAIL = 0,    // 详细模式
+//     DISPLAY_MODE_SIMPLE = 1,    // 简洁模式
+//     DISPLAY_MODE_MAX
+// } air_display_mode_t;
 
 // ==================================
 // 水平仪状态结构体
@@ -49,7 +49,7 @@ typedef struct air_level_state {
     // 显示控制
     uint8_t need_refresh;    // 需要刷新标志
     uint8_t sensor_ready;    // 传感器就绪状态
-    uint8_t display_mode;    // 显示模式
+    // uint8_t display_mode;    // 显示模式
     uint8_t _reserved;       // 保留字节，用于对齐
     
     TickType_t last_update;  // 上次更新时间

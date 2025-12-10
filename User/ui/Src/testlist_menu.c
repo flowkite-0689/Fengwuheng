@@ -2,6 +2,8 @@
 
 
 #include "air_level.h"
+
+#include "Game2048.h"
 // 引用全局菜单系统变量
 extern menu_system_t g_menu_sys;
 
@@ -52,6 +54,16 @@ menu_item_t *testlist_menu_init(void)
               printf("Air Level page init failed!\r\n");
           }
       }
+
+       if (i ==TESTLIST_MENU_2048_OLED )
+            {
+                printf("Game2048_init start init->\r\n");
+                menu_item_t* game2048_page = game2048_init();
+                if (game2048_page != NULL)
+                {
+                    menu_add_child(menu_item, game2048_page);
+                }
+            }
       
       // 最后添加到TestList Menu
       menu_add_child(testlist_menu, menu_item);  

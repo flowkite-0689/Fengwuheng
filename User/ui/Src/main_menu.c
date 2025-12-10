@@ -14,7 +14,7 @@
 #include "setting_menu.h"
 #include "Stopwatch.h"
 #include "StepCounter.h"
-#include "Game2048.h"
+
 
 #include "alarm_menu.h"
 #include "testlist_menu.h"
@@ -26,7 +26,7 @@ const unsigned char *main_menu_icons[] = {
     gImage_stopwatch,    // 秒表
     gImage_setting,      // 设置
     gImage_TandH,        // 温湿度
-    gImage_flashlight,   // 手电筒
+    gImage_lightQD,   // 手电筒
     gImage_bell,         // 闹钟
     gImage_step,         // 步数
     gImage_test          // 测试
@@ -107,25 +107,7 @@ menu_item_t* main_menu_init(void)
                 }
             }
             
-            if (i == 3)
-            {
-                printf("Game2048_init start init->\r\n");
-                menu_item_t* game2048_page = game2048_init();
-                if (game2048_page != NULL)
-                {
-                    menu_add_child(menu_item, game2048_page);
-                }
-            }
-            
-            if (i == 3)
-            {
-                printf("Game2048_init start init->\r\n");
-                menu_item_t* game2048_page = game2048_init();
-                if (game2048_page != NULL)
-                {
-                    menu_add_child(menu_item, game2048_page);
-                }
-            }
+           
             
             if (i == 4)
             {

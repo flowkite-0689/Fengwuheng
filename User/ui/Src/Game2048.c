@@ -117,13 +117,13 @@ void game2048_key_handler(menu_item_t *item, uint8_t key_event)
             break;
             
         case MENU_EVENT_KEY_DOWN:
-            // KEY1 - 切换显示模式
-            printf("2048: KEY1 pressed - Toggle mode\r\n");
-            if (state) {
-                state->display_mode = (state->display_mode + 1) % DISPLAY_MODE_MAX;
-                state->need_refresh = 1;
-            }
-            break;
+//            // KEY1 - 切换显示模式
+//            printf("2048: KEY1 pressed - Toggle mode\r\n");
+//            if (state) {
+//                state->display_mode = (state->display_mode + 1) % DISPLAY_MODE_MAX;
+//                state->need_refresh = 1;
+//            }
+//            break;
             
         case MENU_EVENT_KEY_SELECT:
             // KEY2 - 返回上一级
@@ -244,7 +244,7 @@ static void game2048_init_game_data(game2048_state_t *state)
     state->last_update = xTaskGetTickCount();
     state->last_move = xTaskGetTickCount();
     state->sensor_ready = 0;
-    state->display_mode = DISPLAY_MODE_NORMAL;
+//    state->display_mode = DISPLAY_MODE_NORMAL;
     state->game_state = GAME_STATE_PLAYING;
     
     // 初始化文本缓冲区
