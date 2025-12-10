@@ -62,8 +62,9 @@ void TandH_draw_function(void *context)
 
   TandH_display_info(state);
    
-  vTaskDelay(2500);
+  
   OLED_Refresh_Dirty();
+  vTaskDelay(1000);
 }
 
 void TandH_key_handler(menu_item_t *item, uint8_t key_event)
