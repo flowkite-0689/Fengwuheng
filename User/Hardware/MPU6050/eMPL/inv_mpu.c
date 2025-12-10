@@ -26,7 +26,7 @@
 #include "inv_mpu.h"
 #include "inv_mpu_dmp_motion_driver.h"
 #include "mpu6050.h"
-#define MPU6050							//??????????????????MPU6050
+#define MPU6050							// Define MPU6050 for MPU6050 chip
 #define MOTION_DRIVER_TARGET_MSP430		
 
 #if defined MOTION_DRIVER_TARGET_MSP430
@@ -2774,15 +2774,15 @@ lp_int_restore:
 }
 
 
-//q30???,long?float??????.
+// q30 format constant for converting long to float
 #define q30  1073741824.0f
 
-//?????????????
+// Convert orientation matrix to scalar
 static signed char gyro_orientation[9] = { 1, 0, 0,
                                            0, 1, 0,
                                            0, 0, 1};
-//MPU6050?????
-//?????:0,????
+// MPU6050 self-test function
+// Return: 0 for success
 //    ????,???
 u8 run_self_test(void)
 {
@@ -2810,7 +2810,7 @@ u8 run_self_test(void)
 		return 0;
 	}else return 1;
 }
-//?????????????
+// Convert orientation matrix to scalar
 unsigned short inv_orientation_matrix_to_scalar(
     const signed char *mtx)
 {
@@ -2852,13 +2852,13 @@ unsigned short inv_row_2_scale(const signed char *row)
         b = 7;      // error
     return b;
 }
-//?????,?????.
+// Get milliseconds function
 void mget_ms(unsigned long *time)
 {
 
 }
-//mpu6050,dmp?????
-//?????:0,????
+// MPU6050 DMP initialization function
+// Return: 0 for success
 //    ????,???
 u8 mpu_dmp_init(void)
 {
@@ -2875,7 +2875,7 @@ u8 mpu_dmp_init(void)
 		if(res)return 3; 
 		res=dmp_load_motion_driver_firmware();		//????dmp???
 		if(res)return 4; 
-		res=dmp_set_orientation(inv_orientation_matrix_to_scalar(gyro_orientation));//?????????????
+		res=dmp_set_orientation(inv_orientation_matrix_to_scalar(gyro_orientation));// Convert orientation matrix to scalar
 		if(res)return 5; 
 		res=dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT|DMP_FEATURE_TAP|	//????dmp????
 		    DMP_FEATURE_ANDROID_ORIENT|DMP_FEATURE_SEND_RAW_ACCEL|DMP_FEATURE_SEND_CAL_GYRO|
@@ -2940,13 +2940,13 @@ u8 mpu_dmp_init_pedometer(void)
 		if(res)return 3; 
 		res=dmp_load_motion_driver_firmware();		//????dmp???
 		if(res)return 4; 
-		res=dmp_set_orientation(inv_orientation_matrix_to_scalar(gyro_orientation));//?????????????
+		res=dmp_set_orientation(inv_orientation_matrix_to_scalar(gyro_orientation));// Convert orientation matrix to scalar
 		if(res)return 5; 
 		res=dmp_enable_feature(DMP_FEATURE_PEDOMETER|DMP_FEATURE_SEND_RAW_ACCEL|DMP_FEATURE_SEND_RAW_GYRO);	//????dmp????????????????????????
 		if(res)return 6; 
 		res=dmp_set_fifo_rate(DEFAULT_MPU_HZ);	//????DMP????????(???????200Hz)
 		if(res)return 7;
-		res=dmp_set_interrupt_mode(DMP_INT_CONTINUOUS);	//?????????????????
+		res=dmp_set_interrupt_mode(DMP_INT_CONTINUOUS);	// Convert orientation matrix to scalar????
 		if(res)return 8;   
 		res=run_self_test();	//?????
 		if(res)return 9;    
@@ -2956,12 +2956,12 @@ u8 mpu_dmp_init_pedometer(void)
 	return 0;
 }
 
-// ×¨Îª¼Æ²½Éè¼ÆµÄ¸ßÁéÃô¶È¹¦ÄÜÆôÓÃº¯Êı
+// ä¸“ä¸ºè®¡æ­¥è®¾è®¡çš„é«˜çµæ•åº¦åŠŸèƒ½å¯ç”¨å‡½æ•°
 u8 enable_high_sensitivity_pedometer(void)
 {
 	u8 res;
 	
-	// ½öÆôÓÃ¼Æ²½Ïà¹ØµÄDMP¹¦ÄÜ
+	// ä»…å¯ç”¨è®¡æ­¥ç›¸å…³çš„DMPåŠŸèƒ½
 	res = dmp_enable_feature(DMP_FEATURE_PEDOMETER|DMP_FEATURE_SEND_RAW_ACCEL);
 	
 	if(res != 0)
@@ -2970,7 +2970,7 @@ u8 enable_high_sensitivity_pedometer(void)
 		return res;
 	}
 	
-	// ÖØĞÂÅäÖÃFIFOÒÔÈ·±£ÕıÈ·´¦Àí¼ÓËÙ¶ÈÊı¾İ
+	// é‡æ–°é…ç½®FIFOä»¥ç¡®ä¿æ­£ç¡®å¤„ç†åŠ é€Ÿåº¦æ•°æ®
 	res = mpu_configure_fifo(INV_XYZ_ACCEL);
 	if(res != 0)
 	{
@@ -2978,7 +2978,7 @@ u8 enable_high_sensitivity_pedometer(void)
 		return res;
 	}
 	
-	// ÉèÖÃDMP FIFOËÙÂÊ
+	// è®¾ç½®DMP FIFOé€Ÿç‡
 	res = dmp_set_fifo_rate(200);
 	if(res != 0)
 	{
@@ -2986,7 +2986,7 @@ u8 enable_high_sensitivity_pedometer(void)
 		return res;
 	}
 	
-	// ÖØĞÂÆôÓÃDMP×´Ì¬ÒÔÓ¦ÓÃ¸ü¸Ä
+	// é‡æ–°å¯ç”¨DMPçŠ¶æ€ä»¥åº”ç”¨æ›´æ”¹
 	res = mpu_set_dmp_state(1);
 	if(res != 0)
 	{
@@ -2994,10 +2994,10 @@ u8 enable_high_sensitivity_pedometer(void)
 		return res;
 	}
 	
-	// Ìí¼ÓÒ»¸öĞ¡ÑÓ³ÙÒÔÈ·±£DMPÎÈ¶¨
+	// æ·»åŠ ä¸€ä¸ªå°å»¶è¿Ÿä»¥ç¡®ä¿DMPç¨³å®š
 	Delay_ms(50);
 	
-	// ÖØÖÃ²½Êı¼ÆÊıÆ÷
+	// é‡ç½®æ­¥æ•°è®¡æ•°å™¨
 	dmp_set_pedometer_step_count(0);
 	dmp_set_pedometer_walk_time(0);
 	
@@ -3012,14 +3012,14 @@ u8 enable_pedometer_feature(void)
 	u8 res;
 	
 	// ??????????
-	res = mpu_set_sample_rate(200); // ???¨°??????200Hz
+	res = mpu_set_sample_rate(200); // ???Ã²??????200Hz
 	if(res != 0)
 	{
 		printf("Set high sample rate failed: %d\r\n", res);
 		return res;
 	}
 	
-	// ?????¨¹???????DMP????
+	// ?????Ã¼???????DMP????
 	res = dmp_enable_feature(DMP_FEATURE_6X_LP_QUAT|DMP_FEATURE_TAP|
 	    DMP_FEATURE_ANDROID_ORIENT|DMP_FEATURE_SEND_RAW_ACCEL|DMP_FEATURE_SEND_CAL_GYRO|
 	    DMP_FEATURE_GYRO_CAL|DMP_FEATURE_PEDOMETER);
@@ -3065,7 +3065,7 @@ u8 mpu_pedometer_update(void)
 	short sensors;
 	unsigned char more;
 	
-	// ???FIFO?§Ö?????
+	// ???FIFO?Ğµ?????
 	if(dmp_read_fifo(gyro, accel, NULL, &sensor_timestamp, &sensors, &more) == 0)
 	{
 		return 0; // ???

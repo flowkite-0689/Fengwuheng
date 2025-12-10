@@ -5,7 +5,7 @@
 #include "stm32f10x.h"
 #include "inv_mpu_dmp_motion_driver.h"
 #include "Delay.h"
-//???????????
+// Default MPU sample rate configuration
 #define DEFAULT_MPU_HZ  (100)		//100Hz
 
 #define INV_X_GYRO      (0x40)
@@ -15,7 +15,7 @@
 #define INV_XYZ_ACCEL   (0x08)
 #define INV_XYZ_COMPASS (0x01)
 
-//??????MSP430 DMP????????
+// Interrupt parameter structure for MSP430 DMP configuration
 struct int_param_s {
 
     void (*cb)(void);
@@ -112,7 +112,7 @@ int mpu_reg_dump(void);
 int mpu_read_reg(unsigned char reg, unsigned char *data);
 int mpu_run_self_test(long *gyro, long *accel);
 int mpu_register_tap_cb(void (*func)(unsigned char, unsigned char));
-//??????????§»????
+// Additional utility functions and data retrieval
 void mget_ms(unsigned long *time);
 unsigned short inv_row_2_scale(const signed char *row);
 unsigned short inv_orientation_matrix_to_scalar(const signed char *mtx);
