@@ -15,7 +15,7 @@
 #include "unified_menu.h"
 #include "oled_print.h"
 #include "Key.h"
-#include "MPU6050_hardware_i2c.h"
+#include "MPU6050.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

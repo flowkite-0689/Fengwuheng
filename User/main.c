@@ -45,12 +45,12 @@ int main(void)
     OLED_Printf_Line(2, "fengwuheng");
     OLED_Printf_Line(3, "v1.0.0");
     
-    printf("\r\n======================================\r\n");
+    printf("\r\n==================================\r\n");
     printf("||     STM32F103C8T6   \t\t||\r\n");
     printf("||     FreeRTOS V20221201   \t||\r\n");
     printf("||     fengwuheng   \t\t||\r\n");
     printf("||     v1.0.0   \t\t||\r\n");
-    printf("========================================\r\n");
+    printf("=====================================\r\n");
 
     OLED_Refresh();Delay_s(1);
     OLED_Clear();

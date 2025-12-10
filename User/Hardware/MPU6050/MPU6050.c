@@ -1,5 +1,5 @@
 
-#include "MPU6050_hardware_i2c.h"
+#include "MPU6050.h"
 #include "stdio.h"
 #include "eMPL/inv_mpu.h"
 #include "eMPL/inv_mpu_dmp_motion_driver.h"
