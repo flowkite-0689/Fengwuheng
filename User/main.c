@@ -41,7 +41,7 @@ int main(void)
     OLED_Init();
     // while (1)
     // {
-    //   OLED_Show_many_Tupian(tjbg,8,5);
+      OLED_Show_many_Tupian(tjbg,8,2);
     //   Delay_ms(10);
     // }
     
