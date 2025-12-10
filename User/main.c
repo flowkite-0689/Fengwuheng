@@ -31,21 +31,30 @@ int main(void)
     debug_init();
     OLED_Init();
 
-    OLED_Show_many_Tupian(tjbg,8,2);
+    OLED_Show_many_Tupian(tjbg,8,1);
   
     OLED_Refresh();
     Key_Init();
     Beep_Init();
     
-    BEEP_Buzz(5);
+    BEEP_Buzz(10);
    
     
-    // 系统初始化成功
-    printf("wait for sys OK...\n");
-    OLED_Clear();
-    OLED_Printf_Line(3, "wait for sys OK...");
-    OLED_Refresh();
+    OLED_Printf_Line(0, "STM32F103C8T6");
+    OLED_Printf_Line(1, "FreeRTOS V8.2.3");
+    OLED_Printf_Line(2, "fengwuheng");
+    OLED_Printf_Line(3, "v1.0.0");
+    
+    printf("\r\n======================================\r\n");
+    printf("||     STM32F103C8T6   \t\t||\r\n");
+    printf("||     FreeRTOS V8.2.3   \t||\r\n");
+    printf("||     fengwuheng   \t\t||\r\n");
+    printf("||     v1.0.0   \t\t||\r\n");
+    printf("========================================\r\n");
 
+    OLED_Refresh();Delay_s(1);
+    OLED_Clear();
+    
     // 初始化菜单系统
     if (menu_system_init() != 0) {
         printf("Menu system initialization failed\r\n");

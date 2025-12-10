@@ -299,7 +299,7 @@ void OLED_Show_many_Tupian(const unsigned char *pic_you_want_show[],int size_pic
     {
          OLED_ShowPicture(32, 0, 64, 64, pic_you_want_show[i], 1);
          OLED_Refresh();
-         delay_ms(2);
+         delay_ms(1);
     }
     
     

@@ -12,11 +12,8 @@
 // 菜单选项枚举
 // ==================================
 typedef enum {
-    TESTLIST_MENU_SPI_TEST = 0,
-    TESTLIST_MENU_2048_OLED,
-    TESTLIST_MENU_Frid,
-    TESTLIST_MENU_iwdg,
-    TESTLIST_MENU_AIR_LEVEL,
+     
+    TESTLIST_MENU_2048_OLED= 0,
     TESTLIST_MENU_COUNT             // 选项总数
 } testlist_menu_option_t;
 // ==================================

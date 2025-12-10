@@ -12,11 +12,6 @@
 //++++++++++++++++++++++++=
 #include "TandH.h"
 #include "setting_menu.h"
-#include "Stopwatch.h"
-#include "StepCounter.h"
-
-
-#include "alarm_menu.h"
 #include "testlist_menu.h"
 // ==================================
 // 图标数组

@@ -8,11 +8,8 @@
 extern menu_system_t g_menu_sys;
 
 const char *testlist_menu_text[] = {
-    "SPI_test",
-    "2048_oled",
-    "frid_test",
-    "iwdg_test",
-    "air_level"};
+  
+    "2048_oled"};
 
 menu_item_t *testlist_menu_init(void)
 {
@@ -43,17 +40,6 @@ menu_item_t *testlist_menu_init(void)
                               NULL,
                               NULL); // on_key 使用默认的按键处理
       
-      // 如果是air_level项，先添加子页面，再添加到父菜单
-      if (i == TESTLIST_MENU_AIR_LEVEL) {
-          menu_item_t* air_level_page = air_level_init();
-          if (air_level_page != NULL) {
-              menu_add_child(menu_item, air_level_page);
-              printf("Air Level page added as child to %s, child_count: %d\r\n", 
-                     testlist_menu_text[i], menu_item->child_count);
-          } else {
-              printf("Air Level page init failed!\r\n");
-          }
-      }
 
        if (i ==TESTLIST_MENU_2048_OLED )
             {

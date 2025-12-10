@@ -89,7 +89,7 @@ menu_item_t* menu_item_create(const char *name, menu_type_t type, menu_content_t
     if (item == NULL) {
         return NULL;
     }
-    printf("MALLOC: menu_item_create %s, size=%d bytes, addr=%p (menu_item_t structure allocation)\n", name, sizeof(menu_item_t), item);
+    // printf("MALLOC: menu_item_create %s, size=%d bytes, addr=%p (menu_item_t structure allocation)\n", name, sizeof(menu_item_t), item);
     
     // 清零结构体
     memset(item, 0, sizeof(menu_item_t));
@@ -141,14 +141,14 @@ int8_t menu_add_child(menu_item_t *parent, menu_item_t *child)
     if (new_children == NULL) {
         return -2; // malloc failed
     }
-    printf("MALLOC: menu_add_child %s->%s, size=%d bytes, addr=%p (new children pointer array allocation)\n", 
-           parent->name, child->name, sizeof(menu_item_t *) * (parent->child_count + 1), new_children);
+    // printf("MALLOC: menu_add_child %s->%s, size=%d bytes, addr=%p (new children pointer array allocation)\n", 
+        //    parent->name, child->name, sizeof(menu_item_t *) * (parent->child_count + 1), new_children);
 
     // 拷贝旧指针（如果有）
     if (parent->child_count > 0 && parent->children != NULL) {
         memcpy(new_children, parent->children, sizeof(menu_item_t *) * parent->child_count);
-        printf("FREE: menu_add_child %s, old children pointer array addr=%p, size=%d bytes (old children array release)\n", 
-               parent->name, parent->children, sizeof(menu_item_t *) * parent->child_count);
+        // printf("FREE: menu_add_child %s, old children pointer array addr=%p, size=%d bytes (old children array release)\n", 
+            //    parent->name, parent->children, sizeof(menu_item_t *) * parent->child_count);
         vPortFree(parent->children); // 释放旧数组
     }
 
@@ -239,8 +239,8 @@ int8_t menu_remove_child(menu_item_t *parent, menu_item_t *child)
     }
 
     // 释放旧数组，更新
-    printf("FREE: menu_remove_child %s, old children pointer array addr=%p, size=%d bytes (old children array release during removal)\n", 
-           parent->name, parent->children, sizeof(menu_item_t *) * parent->child_count);
+    // printf("FREE: menu_remove_child %s, old children pointer array addr=%p, size=%d bytes (old children array release during removal)\n", 
+    //        parent->name, parent->children, sizeof(menu_item_t *) * parent->child_count);
     vPortFree(parent->children);
     parent->children = new_children;
     parent->child_count = new_count;
@@ -255,18 +255,18 @@ int8_t menu_item_delete(menu_item_t *item)
     if (!item) return -1;
     if (item == g_menu_sys.current_menu || item == g_menu_sys.root_menu) return -2;
 
-    // 🔐 加锁
+    //  加锁
     if (g_menu_sys.display_mutex) {
         if (xSemaphoreTake(g_menu_sys.display_mutex, pdMS_TO_TICKS(100)) != pdTRUE)
             return -5;
     }
 
-    printf("================================\n");
-    printf("Free heap before deletion: %d bytes\n", xPortGetFreeHeapSize());
-    printf("Deleting menu item: %s (addr=%p)\n", item->name, item);
-    printf("================================\n");
+    // printf("================================\n");
+    // printf("Free heap before deletion: %d bytes\n", xPortGetFreeHeapSize());
+    // printf("Deleting menu item: %s (addr=%p)\n", item->name, item);
+    // printf("================================\n");
     
-    // 📦 用栈模拟递归（避免爆栈）
+    // //  用栈模拟递归（避免爆栈）
     #define MAX_STACK_DEPTH 32  // 增加深度
     menu_item_t *stack[MAX_STACK_DEPTH];
     int top = 0;
@@ -312,8 +312,8 @@ int8_t menu_item_delete(menu_item_t *item)
         // 释放当前项的资源
         // 1. 释放子项指针数组
         if (cur->children != NULL) {
-            printf("FREE: %s children array, addr=%p, size=%d bytes\n", 
-                   cur->name, cur->children, sizeof(menu_item_t *) * cur->child_count);
+            // printf("FREE: %s children array, addr=%p, size=%d bytes\n", 
+                //    cur->name, cur->children, sizeof(menu_item_t *) * cur->child_count);
             vPortFree(cur->children);
             cur->children = NULL;
             cur->child_count = 0;
@@ -321,17 +321,17 @@ int8_t menu_item_delete(menu_item_t *item)
         
         // 2. 释放上下文（如果有）
         if (cur->context != NULL) {
-            printf("FREE: %s context, addr=%p\n", cur->name, cur->context);
+            // printf("FREE: %s context, addr=%p\n", cur->name, cur->context);
             vPortFree(cur->context);
             cur->context = NULL;
         }
         
         // 3. 释放菜单项结构本身
-        printf("FREE: %s menu_item, addr=%p, size=%d bytes\n", 
-               cur->name, cur, sizeof(menu_item_t));
+        // printf("FREE: %s menu_item, addr=%p, size=%d bytes\n", 
+        //        cur->name, cur, sizeof(menu_item_t));
         vPortFree(cur);
         
-        printf("Heap after freeing %s: %d bytes\n", cur->name, xPortGetFreeHeapSize());
+        // printf("Heap after freeing %s: %d bytes\n", cur->name, xPortGetFreeHeapSize());
     }
 
     g_menu_sys.need_refresh = 1;
@@ -665,14 +665,14 @@ int8_t menu_enter(menu_item_t *menu)
     if (menu->on_enter) {
         menu->on_enter(menu);
     }
-    printf("parent : %s ,\n current : %s \n",g_menu_sys.current_menu->parent->name,g_menu_sys.current_menu->name);
+    printf("\nparent : %s ,\n current : %s \n",g_menu_sys.current_menu->parent->name,g_menu_sys.current_menu->name);
     return 0;
 }
 
 int8_t menu_back_to_parent(void)
 {
     printf("menu_back_to_parent\n");
-    printf("parent : %s ,\n current : %s \n",g_menu_sys.current_menu->parent->name,g_menu_sys.current_menu->name);
+    printf("\nparent : %s ,\n current : %s \n",g_menu_sys.current_menu->parent->name,g_menu_sys.current_menu->name);
     if (g_menu_sys.current_menu == NULL || g_menu_sys.current_menu->parent == NULL) {
         return -1;
     }
