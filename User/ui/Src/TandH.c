@@ -1,6 +1,6 @@
 #include "TandH.h"
 #include <stdlib.h>  // 添加stdlib.h用于动态内存管理
-
+#include "esp8266.h"
 // ==================================
 // 静态函数声明
 // ==================================
@@ -61,7 +61,8 @@ void TandH_draw_function(void *context)
   TandH_update_dht11(state);
 
   TandH_display_info(state);
-
+   
+  vTaskDelay(2500);
   OLED_Refresh_Dirty();
 }
 
@@ -236,6 +237,7 @@ static void TandH_cleanup_sensor_data(TandH_state_t *state)
     printf("TandH sensor data cleaned up\r\n");
 }
 
+
 static void TandH_display_info(void *context)
 {
   TandH_state_t *state = (TandH_state_t *)context;
@@ -298,4 +300,9 @@ static void TandH_display_info(void *context)
 
     // 横向湿度条
     OLED_DrawHumidityBar_Line3(state->last_date_H);
+//发布数据到巴法云
+     char data[16];
+     snprintf(data,sizeof(data),"#%d.%d#%d",state->temp_int,state->temp_deci,state->humi_int);
+     ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5","mydht004",data);
+
 }

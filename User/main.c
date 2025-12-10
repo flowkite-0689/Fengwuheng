@@ -11,17 +11,21 @@
 #include "queue.h"
 #include "unified_menu.h"
 #include "index.h"
+#include "esp8266.h"
+#include "uart2.h"
 
 // 创建队列来存储按键事件
 QueueHandle_t keyQueue;     // 按键队列
 
 static TaskHandle_t Menu_handle = NULL;
 static TaskHandle_t Key_handle = NULL;
+static TaskHandle_t ESP8266_handle = NULL;
 
 
 /* 任务函数声明 */
 static void Menu_Main_Task(void *pvParameters);
 static void Key_Main_Task(void *pvParameters);
+static void ESP8266_Main_Task(void *pvParameters);
 
 
 int main(void)
@@ -36,6 +40,9 @@ int main(void)
     OLED_Refresh();
     Key_Init();
     Beep_Init();
+    
+    // 初始化UART2，用于ESP8266通信
+    UART2_DMA_RX_Init(115200);
     
     BEEP_Buzz(10);
    
@@ -54,6 +61,11 @@ int main(void)
 
     OLED_Refresh();Delay_s(1);
     OLED_Clear();
+    
+    printf("ESP8266初始化将在独立任务中进行...\r\n");
+    OLED_Printf_Line(0, "WiFi Connecting...");
+    OLED_Printf_Line(1, "Please Wait...");
+    OLED_Refresh();
     
     // 初始化菜单系统
     if (menu_system_init() != 0) {
@@ -84,6 +96,14 @@ int main(void)
 
     printf("creat task OK\n");
     
+    // 创建ESP8266任务
+    xTaskCreate((TaskFunction_t)ESP8266_Main_Task,          /* 任务函数 */
+                (const char *)"ESP8266_Main",               /* 任务名称 */
+                (uint16_t)512,                              /* 任务堆栈大小 */
+                (void *)NULL,                               /* 任务参数 */
+                (UBaseType_t)2,                             /* 任务优先级 */
+                (TaskHandle_t *)&ESP8266_handle);           /* 任务句柄 */
+    
     // 添加调试信息，确认调度器启动
     printf("Starting scheduler...\n");
     
@@ -106,4 +126,76 @@ static void Key_Main_Task(void *pvParameters)
 {
     // 直接调用统一菜单框架的按键任务
     menu_key_task(pvParameters);
+}
+
+static void ESP8266_Main_Task(void *pvParameters)
+{
+    printf("ESP8266_Main_Task start ->\n");
+    
+    uint8_t first = 1;
+    TickType_t heart_tick = xTaskGetTickCount();    // 
+    TickType_t Publish_tick = xTaskGetTickCount();
+    vTaskDelay(pdMS_TO_TICKS(2000)); // 等待ESP8266开机
+    ESP8266_Receive_Start();
+    
+    if (ESP8266_Connect_WiFi("ElevatedNetwork.lt", "798798798") != 1) // 连接WiFi
+    {
+        printf("ESP8266 Connect WiFi Error\r\n");
+        OLED_Printf_Line(0, "WiFi Error!");
+        OLED_Refresh();
+        vTaskDelete(NULL); // 删除自身任务
+        return ;
+    }
+    printf("ESP8266 Connect WiFi Success\r\n");
+    OLED_Printf_Line(0, "WiFi Connected!");
+    OLED_Printf_Line(1, "ElevatedNetwork.lt");
+    OLED_Refresh();
+    
+    
+    if (ESP8266_Connect_Server("bemfa.com", "8344") != 1) // 连接服务器
+    {
+        printf("ESP8266 Connect Server Error\r\n");
+        return ;
+    }
+    printf("ESP8266 Connect Server Success\r\n");
+    if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "mydht004") != 1) // 订阅主题
+    {
+        printf("ESP8266 TCP Subscribe Error\r\n");
+        return ;
+    }
+    printf("ESP8266 TCP Subscribe Success\r\n");
+
+   while (1)
+    {
+        if ((xTaskGetTickCount() - heart_tick) / 1000 >= 60)
+        {
+            // 发送心跳包云平台
+            heart_tick = xTaskGetTickCount();
+            ESP8266_TCP_Heartbeat();            
+        }
+
+        if ((xTaskGetTickCount() - Publish_tick) / 1000 >= 300 || first)
+        {
+            // 发布主题
+            Publish_tick = xTaskGetTickCount();
+            first = 0;
+
+            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "mydht004", "#512#66") != 1) // 发布主题
+            {
+                printf("ESP8266 TCP Publish Error\r\n");
+            }
+            else
+            {
+                printf("ESP8266 TCP Publish Success\r\n");
+            }
+        }
+        if (uart2_rx_len > 0)
+        {
+            uart2_rx_len = 0;
+            printf("ESP8266 Receive Data: %s\r\n", uart2_buffer);   // 收到巴法云下发的数据
+            
+        }
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+     
 }

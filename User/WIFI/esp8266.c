@@ -13,7 +13,7 @@
 #include <stdio.h>
 #include <FreeRTOS.h>
 #include <task.h>
-#include "uart2.h"
+
 
 extern uint8_t uart2_buffer[UART2_BUF_SIZE]; // uart2接收缓冲
 extern uint8_t uart2_rx_len;     // uart2接收长度
