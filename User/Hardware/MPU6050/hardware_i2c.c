@@ -30,7 +30,32 @@ void MPU6050_I2C_Init(void) {
     // 4. Enable I2C1
     I2C_Cmd(I2C1, ENABLE);
 }
-
+/**
+ * @brief 反初始化I2C硬件，关闭时钟以降低功耗
+ * @param  无
+ * @retval 无
+ */
+void MPU6050_I2C_Deinit(void)
+{
+    GPIO_InitTypeDef GPIO_InitStructure;
+    
+    // 1. 禁用I2C1外设
+    I2C_Cmd(I2C1, DISABLE);
+    
+    // 2. 将GPIO引脚设置为模拟输入（最低功耗模式）
+    GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;  // PB6(SCL), PB7(SDA)
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AIN;           // 模拟输入模式
+    GPIO_Init(GPIOB, &GPIO_InitStructure);
+    
+    // 3. 禁用I2C1时钟
+    RCC_APB1PeriphClockCmd(RCC_APB1Periph_I2C1, DISABLE);
+    
+    // 4. 禁用GPIOB和AFIO时钟（如果确定没有其他外设使用）
+    // 注意：如果系统中还有其他设备使用这些资源，不要禁用
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB | RCC_APB2Periph_AFIO, DISABLE);
+    
+    printf("I2C hardware deinitialized\n");
+}
 /**
  * @brief Wait for I2C event with timeout
  * @param I2Cx: I2C peripheral

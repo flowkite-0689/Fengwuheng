@@ -204,3 +204,27 @@ int dmp_get_pedometer_walk_time_wrap(unsigned long *time)
 {
 	return dmp_get_pedometer_walk_time(time);
 }
+/**
+ * @brief 将MPU6050设置为睡眠模式以降低功耗
+ * @param  无
+ * @retval 0: 成功
+ *         1: 失败
+ */
+u8 MPU_Deinit(void)
+{
+    u8 res;
+    
+    // 首先检查MPU6050是否在线
+    MPU_Read_Byte(MPU_ADDR, MPU_DEVICE_ID_REG, &res);
+    if (res != MPU_ADDR) {
+        printf("MPU6050 not found, cannot enter sleep mode\n");
+        return 1;
+    }
+    
+    // 将MPU6050设置为睡眠模式
+    // 写入0x40到电源管理寄存器1(第6位SLEEP位置1)
+    MPU_Write_Byte(MPU_ADDR, MPU_PWR_MGMT1_REG, 0x40);
+    
+    printf("MPU6050 entered sleep mode\n");
+    return 0;
+}

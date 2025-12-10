@@ -20,5 +20,5 @@ uint8_t MPU6050_ReadBytes(uint8_t RegAddress, uint8_t len, uint8_t *pData);
 uint8_t Hardware_I2C_Write_Bytes(uint8_t dev_addr, uint8_t reg_addr, uint32_t len, uint8_t *pdata);
 uint8_t Hardware_I2C_Read_Bytes_From_Reg(uint8_t dev_addr, uint8_t reg_addr, uint32_t len, uint8_t *pdata);
 void Hardware_I2C_Init(void);
-
+void MPU6050_I2C_Deinit(void);
 #endif

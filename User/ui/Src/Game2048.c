@@ -217,7 +217,11 @@ void game2048_on_exit(menu_item_t *item)
     
     // 清空指针，防止野指针
     item->content.custom.draw_context = NULL;
+
+
     
+
+
     // 清屏
     OLED_Clear();
 }
