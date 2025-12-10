@@ -68,11 +68,11 @@ menu_item_t* main_menu_init(void)
         
         if (menu_item != NULL) {
             // 设置回调函数
-            menu_item_set_callbacks(menu_item, 
-                                   main_menu_on_enter,  // 进入回调
-                                   main_menu_on_exit,   // 退出回调
+            menu_item_set_callbacks(menu_item,
+                                   NULL,               // 进入回调（不需要特殊处理）
+                                   NULL,               // 退出回调（不需要特殊处理）
                                    NULL,               // 选中回调（不需要特殊处理）
-                                   NULL); // 按键处理
+                                   NULL);
             
            
             if (i == MAIN_MENU_TEMPHUMI) { // "Temp&Humid" 是第3个菜单项（索引2）
