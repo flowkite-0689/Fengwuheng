@@ -41,13 +41,13 @@ int main(void)
    
     
     OLED_Printf_Line(0, "STM32F103C8T6");
-    OLED_Printf_Line(1, "FreeRTOS V8.2.3");
+    OLED_Printf_Line(1, "FreeRTOS V20221201");
     OLED_Printf_Line(2, "fengwuheng");
     OLED_Printf_Line(3, "v1.0.0");
     
     printf("\r\n======================================\r\n");
     printf("||     STM32F103C8T6   \t\t||\r\n");
-    printf("||     FreeRTOS V8.2.3   \t||\r\n");
+    printf("||     FreeRTOS V20221201   \t||\r\n");
     printf("||     fengwuheng   \t\t||\r\n");
     printf("||     v1.0.0   \t\t||\r\n");
     printf("========================================\r\n");
