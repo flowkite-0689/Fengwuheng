@@ -1,5 +1,6 @@
 #include "hardware_i2c.h"
 #include "Delay.h"
+#include "debug.h"
 
 /**
  * @brief Initialize I2C1 hardware for MPU6050 (PB6=SCL, PB7=SDA)
