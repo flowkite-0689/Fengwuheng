@@ -23,12 +23,9 @@
 // ==================================
 
 const unsigned char *main_menu_icons[] = {
-    gImage_stopwatch,    // 秒表
     gImage_setting,      // 设置
     gImage_TandH,        // 温湿度
-    gImage_lightQD,   // 手电筒
-    gImage_bell,         // 闹钟
-    gImage_step,         // 步数
+    gImage_lightQD,      // 光照强度
     gImage_test          // 测试
 };
 
@@ -82,14 +79,14 @@ menu_item_t* main_menu_init(void)
                                    NULL,               // 选中回调（不需要特殊处理）
                                    NULL); // 按键处理
             
-            // 特殊处理：将TandH页面绑定到温湿度图标项
-            if (i == 2) { // "Temp&Humid" 是第3个菜单项（索引2）
+           
+            if (i == MAIN_MENU_TEMPHUMI) { // "Temp&Humid" 是第3个菜单项（索引2）
                 menu_item_t* TandH_page = TandH_init();
                 if (TandH_page != NULL) {
                     menu_add_child(menu_item, TandH_page);
                 }
             }
-            if (i == 1)
+            if (i == MAIN_MENU_SETTINGS)
             {
                 menu_item_t* setting_menu =setting_menu_init();
                 if (setting_menu != NULL)
@@ -98,37 +95,11 @@ menu_item_t* main_menu_init(void)
                 }
                 
             }
-            if (i == 0)
-            {
-                menu_item_t* Stopwatch_page =Stopwatch_init();
-                if (Stopwatch_page != NULL)
-                {
-                    menu_add_child(menu_item, Stopwatch_page);
-                }
-            }
             
            
+
             
-            if (i == 4)
-            {
-                  menu_item_t* alarm_menu =alarm_menu_init();
-                if (alarm_menu != NULL)
-                {
-                    menu_add_child(menu_item, alarm_menu);
-                }
-            }
-            
-            if (i == 5)
-            {
-                printf("StepCounter_init start init->\r\n");
-                menu_item_t* step_counter_page = StepCounter_init();
-                if (step_counter_page != NULL)
-                {
-                    menu_add_child(menu_item, step_counter_page);
-                }
-            }
-            
-            if (i == 6)
+            if (i == MAIN_MENU_TEST)
             {
                printf("testlist_menu_init start init->\r\n");
                      menu_item_t* testlist_menu =testlist_menu_init();
@@ -137,8 +108,6 @@ menu_item_t* main_menu_init(void)
                     menu_add_child(menu_item, testlist_menu);
                 }
             }
-            
-            
             
             // 添加到主菜单
             menu_add_child(main_menu, menu_item);

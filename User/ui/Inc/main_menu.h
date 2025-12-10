@@ -18,15 +18,14 @@
 // 菜单选项枚举
 // ==================================
 
-typedef enum {
-    MAIN_MENU_STOPWATCH = 0,  // 秒表
-    MAIN_MENU_SETTINGS,         // 设置
-    MAIN_MENU_TEMPHUMI,         // 温湿度
-    MAIN_MENU_FLASHLIGHT,       // 手电筒
-    MAIN_MENU_ALARM,            // 闹钟
-    MAIN_MENU_STEP,             // 步数
-    MAIN_MENU_TEST,             // 测试
-    MAIN_MENU_COUNT             // 选项总数
+typedef enum
+{
+
+    MAIN_MENU_SETTINGS = 0, // 设置
+    MAIN_MENU_TEMPHUMI,     // 温湿度
+    MAIN_MENU_LIGHT,        // 光照
+    MAIN_MENU_TEST,         // 测试
+    MAIN_MENU_COUNT         // 选项总数
 } main_menu_option_t;
 
 // ==================================
@@ -37,18 +36,18 @@ typedef enum {
  * @brief 初始化主菜单
  * @return 创建的主菜单项指针
  */
-menu_item_t* main_menu_init(void);
+menu_item_t *main_menu_init(void);
 
 /**
  * @brief 主菜单进入回调
  * @param item 菜单项
  */
-void main_menu_on_enter(menu_item_t* item);
+void main_menu_on_enter(menu_item_t *item);
 
 /**
  * @brief 主菜单退出回调
  * @param item 菜单项
  */
-void main_menu_on_exit(menu_item_t* item);
+void main_menu_on_exit(menu_item_t *item);
 
 #endif // __MAIN_MENU_H
