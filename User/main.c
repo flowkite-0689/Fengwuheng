@@ -15,6 +15,7 @@
 #include "light.h"
 #include "rtc_date.h"
 #include "PM25.h"
+#include "sensordata.h"
 // 创建队列来存储按键事件
 QueueHandle_t keyQueue;     // 按键队列
 
@@ -71,6 +72,10 @@ int main(void)
     OLED_Printf_Line(1, "Please Wait...");
     OLED_Refresh();
     
+    // 初始化传感器数据模块
+    SensorData_Init();
+    printf("Sensor data initialization complete\r\n");
+    
     // 初始化菜单系统
     if (menu_system_init() != 0) {
         printf("Menu system initialization failed\r\n");
@@ -100,6 +105,10 @@ int main(void)
     xTaskCreate(Key_Main_Task, "KeyMain", 128, NULL, 4, &Key_handle);
 
     printf("creat task OK\n");
+    
+    // 创建传感器数据采集任务
+    SensorData_CreateTask();
+    printf("SensorData task created\n");
     
     // 创建ESP8266任务
     xTaskCreate((TaskFunction_t)ESP8266_Main_Task,          /* 任务函数 */

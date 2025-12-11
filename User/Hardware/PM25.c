@@ -13,7 +13,7 @@
   * @brief  PM2.5传感器初始化
   * @param  无
   * @retval 无
-  * @note   使用PA0(ADC1通道0)连接PM2.5传感器模拟输出
+  * @note   使用PA0(ADC2通道0)连接PM2.5传感器模拟输出
   *         使用PC13控制PM2.5 LED
   *         原理：LED发光，粉尘散射，光电二极管检测散射光强度
   */
@@ -23,7 +23,7 @@ void PM25_Init(void)
     ADC_InitTypeDef ADC_InitStructure;
     
     // 1. 使能时钟
-    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_ADC1, ENABLE);
+    RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_GPIOC | RCC_APB2Periph_ADC2, ENABLE);
     
     // 延时确保时钟稳定
     Delay_ms(100);
@@ -45,27 +45,27 @@ void PM25_Init(void)
     // 初始状态：LED关闭
     GPIO_SetBits(PM25_LED_PORT, PM25_LED_PIN);
     
-    // 4. 配置ADC1参数
+    // 4. 配置ADC2参数
     ADC_InitStructure.ADC_Mode = ADC_Mode_Independent;        // 独立模式
     ADC_InitStructure.ADC_ScanConvMode = DISABLE;              // 禁用扫描模式（单通道）
     ADC_InitStructure.ADC_ContinuousConvMode = DISABLE;       // 禁用连续转换
     ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None; // 软件触发
     ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;     // 数据右对齐
     ADC_InitStructure.ADC_NbrOfChannel = 1;                    // 1个转换通道
-    ADC_Init(ADC1, &ADC_InitStructure);
+    ADC_Init(ADC2, &ADC_InitStructure);
     
     // 5. 配置ADC通道
     // 配置通道0（对应PA0），第1个转换，采样时间为55.5个周期
-    ADC_RegularChannelConfig(ADC1, ADC_Channel_0, 1, ADC_SampleTime_55Cycles5);
+    ADC_RegularChannelConfig(ADC2, ADC_Channel_0, 1, ADC_SampleTime_55Cycles5);
     
     // 6. 使能ADC
-    ADC_Cmd(ADC1, ENABLE);
+    ADC_Cmd(ADC2, ENABLE);
     
     // 7. ADC校准
-    ADC_ResetCalibration(ADC1);
-    while(ADC_GetResetCalibrationStatus(ADC1));
-    ADC_StartCalibration(ADC1);
-    while(ADC_GetCalibrationStatus(ADC1));
+    ADC_ResetCalibration(ADC2);
+    while(ADC_GetResetCalibrationStatus(ADC2));
+    ADC_StartCalibration(ADC2);
+    while(ADC_GetCalibrationStatus(ADC2));
 }
 
 /**
@@ -76,13 +76,13 @@ void PM25_Init(void)
 uint16_t PM25_GetRawValue(void)
 {
     // 软件启动ADC转换
-    ADC_SoftwareStartConvCmd(ADC1, ENABLE);
+    ADC_SoftwareStartConvCmd(ADC2, ENABLE);
     
     // 等待转换完成
-    while(ADC_GetFlagStatus(ADC1, ADC_FLAG_EOC) == RESET);
+    while(ADC_GetFlagStatus(ADC2, ADC_FLAG_EOC) == RESET);
     
     // 读取ADC值(12位值，0-4095)
-    return ADC_GetConversionValue(ADC1);
+    return ADC_GetConversionValue(ADC2);
 }
 
 /**
@@ -94,7 +94,8 @@ float PM25_GetVoltage(void)
 {
     uint16_t adcValue = PM25_GetRawValue();
     // 公式：电压 = (ADC值 / 4095) * 参考电压
-    return ((float)adcValue / 4095.0f) * 3.3f;
+    // 与PM25_ReadPM25()保持一致，使用5.0V参考电压
+    return ((float)adcValue / 4095.0f) * 5.0f;
 }
 
 /**
@@ -125,13 +126,12 @@ float PM25_ReadPM25(void)
     GPIO_SetBits(PM25_LED_PORT, PM25_LED_PIN);
     
     // 调试信息
-    // printf("PM25 DEBUG: ADC Raw=%d, Voltage=%.3fV\n", adc_raw, voltage);
+    printf("PM25 DEBUG: ADC Raw=%d, Voltage=%.3fV\n", adc_raw, voltage);
     
-    // 5. 根据实际测量数据调整公式
-    // 实测电压范围：0.15-0.22V
-    // 调整公式：PM2.5 = 500 * Vout - 75
-    // 这样0.15V对应0μg/m³，0.22V对应35μg/m³
-    pm25 = 500.0f * voltage - 75.0f;
+    // 5. 使用标准公式计算PM2.5浓度
+    // 公式：PM2.5(μg/m³) = (0.17 * Vout - 0.1) * 1000
+    // 简化后：PM2.5 = 170 * Vout - 100
+    pm25 = 170.0f * voltage - 100.0f;
     
     // 6. 确保返回非负值
     return (pm25 > 0) ? pm25 : 0;
@@ -139,20 +139,15 @@ float PM25_ReadPM25(void)
 
 /**
   * @brief  获取PM2.5污染等级
-  * @param  无
+  * @param  pm25_value: PM2.5浓度值 (μg/m³)
   * @retval 污染等级(0-5)
   */
 uint8_t PM25_GetLevel(void)
 {
     float pm25;
-    float voltage;
-    uint16_t adc_raw;
     
-    // 直接调用PM25_ReadPM25()获取PM2.5值，避免重复代码
+    // 直接调用PM25_ReadPM25()获取PM2.5值，保持接口兼容性
     pm25 = PM25_ReadPM25();
-    
-    // 调试信息
-    // printf("PM25_GetLevel DEBUG: PM25=%.1f \n", pm25);
     
     // 基于PM2.5值的污染等级划分
     if (pm25 <= 35) {
@@ -164,6 +159,29 @@ uint8_t PM25_GetLevel(void)
     } else if (pm25 <= 150) {
         return PM25_LEVEL_UNHEALTHY;                // 中度污染(116-150)
     } else if (pm25 <= 250) {
+        return PM25_LEVEL_VERY_UNHEALTHY;          // 重度污染(151-250)
+    } else {
+        return PM25_LEVEL_HAZARDOUS;                // 严重污染(251+)
+    }
+}
+
+/**
+  * @brief  获取PM2.5污染等级（使用已知PM2.5值）
+  * @param  pm25_value: PM2.5浓度值 (μg/m³)
+  * @retval 污染等级(0-5)
+  */
+uint8_t PM25_GetLevelFromValue(float pm25_value)
+{
+    // 基于PM2.5值的污染等级划分
+    if (pm25_value <= 35) {
+        return PM25_LEVEL_GOOD;                    // 优(0-35)
+    } else if (pm25_value <= 75) {
+        return PM25_LEVEL_MODERATE;                // 良(36-75)
+    } else if (pm25_value <= 115) {
+        return PM25_LEVEL_UNHEALTHY_SENSITIVE;     // 轻度污染(76-115)
+    } else if (pm25_value <= 150) {
+        return PM25_LEVEL_UNHEALTHY;                // 中度污染(116-150)
+    } else if (pm25_value <= 250) {
         return PM25_LEVEL_VERY_UNHEALTHY;          // 重度污染(151-250)
     } else {
         return PM25_LEVEL_HAZARDOUS;                // 严重污染(251+)

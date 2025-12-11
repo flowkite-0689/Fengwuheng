@@ -25,6 +25,7 @@ uint16_t PM25_GetRawValue(void);
 float PM25_GetVoltage(void);
 float PM25_ReadPM25(void);
 uint8_t PM25_GetLevel(void);
+uint8_t PM25_GetLevelFromValue(float pm25_value);
 const char* PM25_GetDescription(void);
 const char* PM25_GetLevelDescription(void);
 
