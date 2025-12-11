@@ -13,6 +13,7 @@
 #include "esp8266.h"
 #include "uart2.h"
 #include "light.h"
+#include "rtc_date.h"
 // 创建队列来存储按键事件
 QueueHandle_t keyQueue;     // 按键队列
 
@@ -166,6 +167,25 @@ static void ESP8266_Main_Task(void *pvParameters)
         return ;
     }
     printf("ESP8266 TCP Subscribe Success\r\n");
+
+    char time_buffer[64];
+    if (ESP8266_TCP_GetTime("4af24e3731744508bd519435397e4ab5", time_buffer, sizeof(time_buffer)) != 1)
+    {
+        printf("ESP8266 Get Time Error\r\n");
+        return ;
+    }
+    printf("ESP8266 Get Time Success: %s\r\n", time_buffer);
+    
+    // 同步到RTC
+    if (RTC_SetFromNetworkTime(time_buffer) != 1)
+    {
+        printf("RTC Sync Failed\r\n");
+    }
+    else
+    {
+        printf("RTC Sync Success\r\n");
+    }
+    
 
    while (1)
     {

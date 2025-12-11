@@ -157,6 +157,8 @@ uint8_t ESP8266_TCP_Publish(char *uid, char *topic, char *data)
     return 1;
 }
 
+
+
 // 发送心跳包
 uint8_t ESP8266_TCP_Heartbeat(void)
 {
@@ -165,4 +167,45 @@ uint8_t ESP8266_TCP_Heartbeat(void)
         return 0;
     }
     return 1;
+}
+// 获取时间
+uint8_t ESP8266_TCP_GetTime(char *uid, char *time_buffer, uint16_t buffer_size)
+{
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "cmd=7&uid=%s&type=1\r\n", uid);
+    
+    // 清空接收缓冲区
+    uart2_rx_len = 0;
+    memset(uart2_buffer, 0, sizeof(uart2_buffer));
+    
+    // 发送时间获取命令
+    UART2_SendDataToWiFi_Poll((uint8_t *)cmd, strlen(cmd));
+    
+    // 等待响应
+    uint16_t timeout = 3000;
+    while (uart2_rx_len <= 0 && timeout > 0)
+    {
+        timeout--;
+        vTaskDelay(pdMS_TO_TICKS(1));
+    }
+    
+    if (uart2_rx_len > 0 && timeout > 0)
+    {
+        // 查找时间数据（格式：2021-06-11 16:39:27）
+        char *time_start = (char *)uart2_buffer;
+        
+        // 直接复制接收到的数据到输出缓冲区
+        uint16_t copy_len = uart2_rx_len < buffer_size - 1 ? uart2_rx_len : buffer_size - 1;
+        memcpy(time_buffer, uart2_buffer, copy_len);
+        time_buffer[copy_len] = '\0';
+        
+        // 打印接收到的数据用于调试
+        printf("Received time data: %s\n", time_buffer);
+        
+        uart2_rx_len = 0; // 清空接收缓冲
+        return 1;
+    }
+    
+    uart2_rx_len = 0; // 清空接收缓冲
+    return 0;
 }

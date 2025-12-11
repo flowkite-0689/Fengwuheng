@@ -376,3 +376,45 @@ void RTC_SetDate_Manual(uint16_t year, uint8_t month, uint8_t day)
 
     MyRTC_SetTime(); // 自动转 UTC 存入 RTC
 }
+
+// 从网络时间字符串设置RTC（格式：2021-06-11 16:39:27）
+uint8_t RTC_SetFromNetworkTime(const char *time_str)
+{
+    if (time_str == NULL) {
+        printf("RTC_SetFromNetworkTime: NULL time string\n");
+        return 0;
+    }
+    
+    printf("Parsing network time: %s\n", time_str);
+    
+    // 解析时间字符串格式：2021-06-11 16:39:27
+    uint16_t year;
+    uint8_t month, day, hour, minute, second;
+    
+    if (sscanf(time_str, "%hu-%hhu-%hhu %hhu:%hhu:%hhu", 
+               &year, &month, &day, &hour, &minute, &second) != 6) {
+        printf("RTC_SetFromNetworkTime: Failed to parse time string\n");
+        return 0;
+    }
+    
+    // 验证解析结果
+    if (year < 2000 || year > 2099 || month < 1 || month > 12 || 
+        day < 1 || day > 31 || hour > 23 || minute > 59 || second > 59) {
+        printf("RTC_SetFromNetworkTime: Invalid time values\n");
+        return 0;
+    }
+    
+    printf("Parsed time: %04d-%02d-%02d %02d:%02d:%02d\n", 
+           year, month, day, hour, minute, second);
+    
+    // 使用现有的手动设置函数
+    RTC_SetDateTime_Manual(year, month, day, hour, minute, second);
+    
+    // 读取确认设置结果
+    MyRTC_ReadTime();
+    printf("RTC set to: %04d-%02d-%02d %02d:%02d:%02d\n", 
+           MyRTC_Time[0], MyRTC_Time[1], MyRTC_Time[2],
+           MyRTC_Time[3], MyRTC_Time[4], MyRTC_Time[5]);
+    
+    return 1;
+}

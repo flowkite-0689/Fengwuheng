@@ -16,4 +16,5 @@ uint8_t ESP8266_Connect_Server(char *ip, char *port);
 uint8_t ESP8266_TCP_Subscribe(char *uid, char *topic);
 uint8_t ESP8266_TCP_Publish(char *uid, char *topic, char *data);
 uint8_t ESP8266_TCP_Heartbeat(void);
+uint8_t ESP8266_TCP_GetTime(char *uid, char *time_buffer, uint16_t buffer_size);
 #endif 
