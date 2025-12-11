@@ -7,13 +7,12 @@
 #include "beep.h"
 #include "oled_print.h"
 #include "rtc_date.h"
-#include "dht11.h"
 #include "queue.h"
 #include "unified_menu.h"
 #include "index.h"
 #include "esp8266.h"
 #include "uart2.h"
-
+#include "light.h"
 // 创建队列来存储按键事件
 QueueHandle_t keyQueue;     // 按键队列
 
@@ -58,7 +57,9 @@ int main(void)
     printf("||     fengwuheng   \t\t||\r\n");
     printf("||     v1.0.0   \t\t||\r\n");
     printf("=====================================\r\n");
-
+    Light_ADC_Init();
+    printf("Light_ADC_Init OK\n");
+    
     OLED_Refresh();Delay_s(1);
     OLED_Clear();
     
@@ -84,7 +85,8 @@ int main(void)
     g_menu_sys.root_menu = index_menu;
     g_menu_sys.current_menu = index_menu;
 
-    printf("root_menu init OK\n");
+
+   
     /* 创建菜单任务 */
     xTaskCreate((TaskFunction_t)Menu_Main_Task,          /* 任务函数 */
                 (const char *)"Menu_Main",               /* 任务名称 */

@@ -10,6 +10,7 @@
 #include "main_menu.h"
 #include <string.h>
 #include "simple_pedometer.h"
+#include "light.h"
 // ==================================
 // 全局变量定义
 // ==================================
@@ -195,7 +196,9 @@ static void index_display_status_info(void)
     
     // 绘制底部进度条：表示一天的时间进度
     OLED_DrawProgressBar(0, 44, 125, 2, time_of_day, 0, 24 * 60, 0, 1,1);
-    
+    int lux = Light_GetLux();
+    printf("lux = %d\n", lux);
+    printf("root_menu init OK\n");
     // 绘制右侧进度条：表示当前秒数进度
     OLED_DrawProgressBar(125, 0, 2, 64, g_index_state.seconds, 0, 60, 0, 1,1);
 }
