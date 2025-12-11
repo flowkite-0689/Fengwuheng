@@ -14,6 +14,7 @@
 #include "uart2.h"
 #include "light.h"
 #include "rtc_date.h"
+#include "PM25.h"
 // 创建队列来存储按键事件
 QueueHandle_t keyQueue;     // 按键队列
 
@@ -40,6 +41,7 @@ int main(void)
     OLED_Refresh();
     Key_Init();
     Beep_Init();
+    PM25_Init();
     
     // 初始化UART2，用于ESP8266通信
     UART2_DMA_RX_Init(115200);
@@ -102,7 +104,7 @@ int main(void)
     // 创建ESP8266任务
     xTaskCreate((TaskFunction_t)ESP8266_Main_Task,          /* 任务函数 */
                 (const char *)"ESP8266_Main",               /* 任务名称 */
-                (uint16_t)512,                              /* 任务堆栈大小 */
+                (uint16_t)256,                              /* 任务堆栈大小 */
                 (void *)NULL,                               /* 任务参数 */
                 (UBaseType_t)2,                             /* 任务优先级 */
                 (TaskHandle_t *)&ESP8266_handle);           /* 任务句柄 */
@@ -141,7 +143,7 @@ static void ESP8266_Main_Task(void *pvParameters)
     vTaskDelay(pdMS_TO_TICKS(2000)); // 等待ESP8266开机
     ESP8266_Receive_Start();
     
-    if (ESP8266_Connect_WiFi("ElevatedNetwork.lt", "798798798") != 1) // 连接WiFi
+    if (ESP8266_Connect_WiFi("sgwl.az", "798798798") != 1) // 连接WiFi
     {
         printf("ESP8266 Connect WiFi Error\r\n");
         OLED_Printf_Line(0, "WiFi Error!");

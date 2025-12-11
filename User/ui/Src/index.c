@@ -199,6 +199,9 @@ static void index_display_status_info(void)
     // int lux = Light_GetLux();
     // printf("lux = %d\n", lux);
     // printf("root_menu init OK\n");
-    // 绘制右侧进度条：表示当前秒数进度
+    // 绘制右侧进度条：表示当前秒数进
     OLED_DrawProgressBar(125, 0, 2, 64, g_index_state.seconds, 0, 60, 0, 1,1);
+    printf("PM25_ReadPM25 : %f\n",PM25_ReadPM25());
+    printf("PM25_GetLevel : %d\n",PM25_GetLevel());
+
 }
