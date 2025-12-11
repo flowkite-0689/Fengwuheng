@@ -125,7 +125,7 @@ float PM25_ReadPM25(void)
     GPIO_SetBits(PM25_LED_PORT, PM25_LED_PIN);
     
     // 调试信息
-    printf("PM25 DEBUG: ADC Raw=%d, Voltage=%.3fV\n", adc_raw, voltage);
+    // printf("PM25 DEBUG: ADC Raw=%d, Voltage=%.3fV\n", adc_raw, voltage);
     
     // 5. 根据实际测量数据调整公式
     // 实测电压范围：0.15-0.22V
@@ -152,7 +152,7 @@ uint8_t PM25_GetLevel(void)
     pm25 = PM25_ReadPM25();
     
     // 调试信息
-    printf("PM25_GetLevel DEBUG: PM25=%.1f \n", pm25);
+    // printf("PM25_GetLevel DEBUG: PM25=%.1f \n", pm25);
     
     // 基于PM2.5值的污染等级划分
     if (pm25 <= 35) {
