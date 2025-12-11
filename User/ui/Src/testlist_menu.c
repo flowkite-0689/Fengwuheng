@@ -23,22 +23,6 @@ menu_item_t *testlist_menu_init(void)
     return NULL;
   }
 
-    for (uint8_t i = 0; i < TESTLIST_MENU_COUNT; i++)
-    {
-    menu_item_t *menu_item = MENU_ITEM_TEXT(
-        testlist_menu_text[i],
-        testlist_menu_text[i],
-        15);
-    if (menu_item != NULL)
-    {
-      // 先设置回调函数 
-    }
-    }
-  
-  // 设置第一个子项为选中状态
-  if (testlist_menu->child_count > 0) {
-      testlist_menu->selected_child = 0;
-  }
   
  return testlist_menu;
 }

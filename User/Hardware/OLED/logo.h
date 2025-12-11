@@ -31,4 +31,5 @@ extern const unsigned char gImage_tjbg6[512];
 extern const unsigned char gImage_tjbg7[512] ;
 extern const unsigned char gImage_tjbg8[512];
 extern const unsigned char *tjbg[];
+extern const unsigned char gImage_wifi[128];
 #endif

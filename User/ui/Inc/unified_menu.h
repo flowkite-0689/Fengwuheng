@@ -35,18 +35,23 @@ typedef enum {
 
 typedef struct {
     const unsigned char *icon_data;  // 图标数据
-    uint8_t icon_width;             // 图标宽度
-    uint8_t icon_height;            // 图标高度
+    // uint8_t icon_width;             // 图标宽度
+    // uint8_t icon_height;            // 图标高度
 } menu_icon_t;
 
 typedef struct {
     const char *text;               // 文本内容
-    uint8_t max_length;             // 最大显示长度
+    // uint8_t max_length;             // 最大显示长度
 } menu_text_t;
 typedef struct {
       void (*draw_function)(void* context);     // 自定义绘制函数
       void* draw_context;                       // 绘制上下文数据
+    const unsigned char *icon_data;  // 图标数据
+     const char *text;  
   } menu_custom_t;
+
+
+
 
 typedef union {
     menu_icon_t icon;               // 图标数据
@@ -365,21 +370,21 @@ void menu_task(void *pvParameters);
  */
 void menu_key_task(void *pvParameters);
 
-// 创建自定义菜单项
+//创建自定义菜单项
 #define MENU_ITEM_CUSTOM(name, draw_func, context) \
     menu_item_create(name, MENU_TYPE_CUSTOM, \
         (menu_content_t){.custom = {draw_func, context}})
 
 // 便利宏定义
 // 创建图标菜单项
-#define MENU_ITEM_ICON(name, icon_ptr, w, h) \
-    menu_item_create(name, MENU_TYPE_HORIZONTAL_ICON, \
-        (menu_content_t){.icon = {icon_ptr, w, h}})
+// #define MENU_ITEM_ICON(name, icon_ptr, w, h) \
+//     menu_item_create(name, MENU_TYPE_HORIZONTAL_ICON, \
+//         (menu_content_t){.icon = {icon_ptr, w, h}})
 
-// 创建文本菜单项
-#define MENU_ITEM_TEXT(name, text_str, max_len) \
-    menu_item_create(name, MENU_TYPE_VERTICAL_LIST, \
-        (menu_content_t){.text = {text_str, max_len}})
+//// 创建文本菜单项
+//#define MENU_ITEM_TEXT(name, text_str, max_len) \
+//    menu_item_create(name, MENU_TYPE_VERTICAL_LIST, \
+//        (menu_content_t){.text = {text_str, max_len}})
 
 // 常用布局配置预设
 #define LAYOUT_HORIZONTAL_MAIN() { \

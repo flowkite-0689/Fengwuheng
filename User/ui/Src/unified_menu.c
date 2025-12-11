@@ -9,7 +9,6 @@
 #include "unified_menu.h"
 #include <string.h>
 #include <stdlib.h>
-#include "../../alarm/Inc/alarm_alert.h"
 
 // ==================================
 // 全局菜单系统实例
@@ -68,7 +67,7 @@ int8_t menu_system_init(void)
     g_menu_sys.layout = (menu_layout_config_t)LAYOUT_HORIZONTAL_MAIN();
     
     // 预先创建闹钟提醒页面
-    g_alarm_alert_page = alarm_alert_init();
+   // g_alarm_alert_page = alarm_alert_init();
     if (g_alarm_alert_page == NULL) {
         printf("Warning: Failed to create alarm alert page\r\n");
     } else {
@@ -393,8 +392,14 @@ void menu_display_horizontal(menu_item_t *menu)
     
     // 显示左侧图标（淡化）
     if (menu->children[left_index]->content.icon.icon_data) {
-        OLED_ShowPicture(0, 16, 32, 32, 
+        if (menu->children[left_index]->type == 2)
+        {
+            OLED_ShowPicture(0, 16, 32, 32, 
+                        menu->children[left_index]->content.custom.icon_data, 1);
+        }
+         OLED_ShowPicture(0, 16, 32, 32, 
                         menu->children[left_index]->content.icon.icon_data, 1);
+       
     }
     
     // 显示中间图标（清晰）
@@ -500,15 +505,15 @@ int8_t menu_process_event(menu_event_t *event)
         }
         
         // 触发闹钟提醒
-        if (alarm_alert_trigger(event->param) == 0) {
-            // 设置闹钟提醒页面的父菜单为当前菜单（如果存在）
-            if (g_menu_sys.current_menu != NULL) {
-                g_alarm_alert_page->parent = g_menu_sys.current_menu;
-            }
-            // 切换到闹钟提醒页面
-            menu_enter(g_alarm_alert_page);
-            printf("Switched to alarm alert page\n");
-        }
+//        if (alarm_alert_trigger(event->param) == 0) {
+//            // 设置闹钟提醒页面的父菜单为当前菜单（如果存在）
+//            if (g_menu_sys.current_menu != NULL) {
+//                g_alarm_alert_page->parent = g_menu_sys.current_menu;
+//            }
+//            // 切换到闹钟提醒页面
+//            menu_enter(g_alarm_alert_page);
+//            printf("Switched to alarm alert page\n");
+//        }
         return 0;
     }
     
@@ -756,27 +761,27 @@ int8_t menu_enter_selected(void)
         selected->on_select(selected);
     }
     
-    // 如果有子菜单，进入子菜单
+    // 设置父菜单关系
+    selected->parent = g_menu_sys.current_menu;
+    
+    // 根据菜单类型决定如何进入
     if (selected->child_count > 0) {
-        // 对于横向图标菜单和纵向列表菜单，直接进入第一个子菜单
-        if(menu->type == MENU_TYPE_HORIZONTAL_ICON || menu->type == MENU_TYPE_VERTICAL_LIST){
-            // 进入第一个子菜单
-            menu_item_t *child_menu = selected->children[0];
-            child_menu->parent = g_menu_sys.current_menu;
-            printf("menu_enter_selected\nparent : %s ,\n current : %s \n",child_menu->parent->name,child_menu->name);
-            return menu_enter(child_menu);
-        } else {
-            // 设置子菜单的父菜单为当前菜单
-            selected->parent = g_menu_sys.current_menu;
-            printf("menu_enter_selected\nparent : %s ,\n current : %s \n",selected->parent->name,selected->name);
-            return menu_enter(selected);
-        }
+        // 有子菜单的菜单项：直接进入该菜单
+        printf("menu_enter_selected - Entering menu with children\n");
+        printf("parent : %s ,\n current : %s \n", selected->parent->name, selected->name);
+        return menu_enter(selected);
     } else {
-        // 没有子菜单，调用进入回调并返回当前索引（兼容原有行为）
+        // 没有子菜单的菜单项：可能是功能页面或自定义页面
+        printf("menu_enter_selected - Entering leaf node (custom page/function)\n");
+        printf("parent : %s ,\n current : %s \n", selected->parent->name, selected->name);
+        
+        // 调用进入回调
         if (selected->on_enter) {
             selected->on_enter(selected);
         }
-        return menu->selected_child;
+        
+        // 进入该页面
+        return menu_enter(selected);
     }
 }
 

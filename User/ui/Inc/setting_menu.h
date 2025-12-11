@@ -8,7 +8,8 @@
 
 typedef enum {
   SETTING_MENU_SETTIME = 0, // 设置时间界面
-  SETTING_MENU_SETDATE, // 设置日期界面
+  SETTING_MENU_SETDATE,
+  SETTING_MENU_WIFI, // wifi同步
   SETTING_MENU_COUNT // 选项总数
 
 }setting_menu_option_t;
