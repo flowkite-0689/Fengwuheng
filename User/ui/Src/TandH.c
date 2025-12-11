@@ -58,13 +58,12 @@ void TandH_draw_function(void *context)
     return;
   }
 
-  TandH_update_dht11(state);
+  // 温湿度数据由全局SensorData任务定期更新，无需单独读取
 
   TandH_display_info(state);
    
   
   OLED_Refresh_Dirty();
-  vTaskDelay(1000);
 }
 
 void TandH_key_handler(menu_item_t *item, uint8_t key_event)
@@ -109,23 +108,12 @@ void TandH_key_handler(menu_item_t *item, uint8_t key_event)
   state->need_refresh = 1;
 }
 
-void TandH_update_dht11(void *context)
-{
-  TandH_state_t *state = (TandH_state_t *)context;
-  if (state == NULL) {
-    return;
-  }
-  
-  DHT11_Data_TypeDef dhtdata;
 
-  state->result = Read_DHT11(&dhtdata);
-
-  state->temp_int = dhtdata.temp_int;
-  state->temp_deci = dhtdata.temp_deci;
-  state->humi_int = dhtdata.humi_int;
-  state->humi_deci = dhtdata.humi_deci;
-}
-
+/**
+ * @brief 从上下文获取温湿度状态结构体指针
+ * @param context 指向TandH状态结构体的上下文指针
+ * @return 返回指向TandH状态结构体的指针
+ */
 TandH_state_t *TandH_get_state(void *context)
 {
   return (TandH_state_t *)context;
@@ -159,8 +147,7 @@ void TandH_on_enter(menu_item_t *item)
   // 初始化状态数据
   TandH_init_sensor_data(state);
   
-  // 初始化DHT11传感器
-  DHT11_Init();
+  // 传感器数据已在全局SensorData任务中初始化和读取
   
   // 设置到菜单项上下文
   item->content.custom.draw_context = state;
@@ -215,8 +202,8 @@ static void TandH_init_sensor_data(TandH_state_t *state)
     state->need_refresh = 1;
     state->last_update = xTaskGetTickCount();
     state->last_date_H = 0;
-    state->temp_int = 50;
-    state->humi_int = 100;
+     SensorData.dht11_data.temp_int = 50;
+     SensorData.dht11_data.humi_int = 100;
     state->result = 1;
     
     printf("TandH state initialized\r\n");
@@ -232,8 +219,7 @@ static void TandH_cleanup_sensor_data(TandH_state_t *state)
         return;
     }
     
-    // 如果有需要关闭的传感器，在这里执行
-    // 例如：DHT11_Deinit();
+    // 传感器管理由全局SensorData任务处理，无需在此清理
     
     printf("TandH sensor data cleaned up\r\n");
 }
@@ -246,27 +232,16 @@ static void TandH_display_info(void *context)
     return;
   }
   
-  if (state->result == 0)
-    {
+ 
       OLED_Clear_Line(3);
       OLED_Printf_Line(0, "Temperature:%d.%dC ",
-                       state->temp_int, state->temp_deci);
+                       SensorData.dht11_data.temp_int,  SensorData.dht11_data.temp_deci);
       OLED_Printf_Line(2, "Humidity:  %d.%d%%",
-                       state->humi_int, state->humi_deci);
+                        SensorData.dht11_data.humi_int, SensorData.dht11_data.humi_deci);
                        // 横向温度计（支持小数：25.5°C → 255）
     
-// printf("Humi_int: %d, Humi_deci: %d\n", state->humi_int, state->humi_deci);
-//                        printf("temp_int: %d, temp_deci: %d\n", state->temp_int, state->temp_deci);
-    
-    }
-    else
-    {
-     
-      // OLED_Clear_Line(2);
-      // OLED_Printf_Line(2, "DHT11 Error!    ");
-      // OLED_Printf_Line(3, "Code: %d        ", result);
-    }
-    int16_t temp_tenth = state->temp_int * 10 + state->temp_deci;
+
+    int16_t temp_tenth =  SensorData.dht11_data.temp_int * 10 +  SensorData.dht11_data.temp_deci;
     if (temp_tenth >state->last_date_T)
     {
       
@@ -285,15 +260,15 @@ static void TandH_display_info(void *context)
     }
       OLED_DrawTempBar_Line1(state->last_date_T);
 
-    if (state->humi_int>state->last_date_H )
+    if ( SensorData.dht11_data.humi_int>state->last_date_H )
     {
-      if (state->humi_int-state->last_date_H>=10)
+      if ( SensorData.dht11_data.humi_int-state->last_date_H>=10)
       {
         state->last_date_H+=4;
       }
       
       state->last_date_H++;
-    }else if (state->humi_int < state->last_date_H  )
+    }else if ( SensorData.dht11_data.humi_int < state->last_date_H  )
     {
       state->last_date_H-=3;
     }
@@ -301,7 +276,7 @@ static void TandH_display_info(void *context)
 
     // 横向湿度条
     OLED_DrawHumidityBar_Line3(state->last_date_H);
-    //发布数据到巴法云
+    
      
 
 }

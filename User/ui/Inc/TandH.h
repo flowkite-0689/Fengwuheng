@@ -7,8 +7,7 @@
 #include "queue.h"
 #include "unified_menu.h"
 #include "oled_print.h"
-
-#include "dht11.h"
+#include "sensordata.h"
 
 typedef struct
 {
@@ -41,8 +40,6 @@ menu_item_t *TandH_init(void);
 void TandH_draw_function(void *context);
 
 void TandH_key_handler(menu_item_t *item, uint8_t key_event);
-
-void TandH_update_dht11(void *context);
 
 TandH_state_t *TandH_get_state(void *context);
 
