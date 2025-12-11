@@ -13,7 +13,7 @@
 
 // PM2.5结构体
 typedef struct {
-    uint16_t pm25_value;      // PM2.5数值 (μg/m³)
+    float pm25_value;      // PM2.5数值 (μg/m³)
     uint8_t  level;          // 污染等级 (0-5)
     float    voltage;         // ADC电压值 (V)
     uint16_t adc_raw;        // ADC原始值
