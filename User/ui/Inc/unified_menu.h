@@ -18,7 +18,7 @@
 #include "Key.h"
 #include <stdio.h>
 #include "beep.h"
-
+#include "debug.h"
 // ==================================
 // 菜单类型枚举
 // ==================================
