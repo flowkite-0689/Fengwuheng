@@ -11,16 +11,10 @@
 
 typedef struct
 {
-   // 温湿度信息
-   uint8_t humi_int;  // 湿度的整数部分
-   uint8_t humi_deci; // 湿度的小数部分
-   uint8_t temp_int;  // 温度的整数部分
-   uint8_t temp_deci; // 温度的小数部分
-
+  
    int16_t last_date_T;
    int16_t last_date_H;
    u8 result;
-
    // 刷新标志
    uint8_t need_refresh; // 需要刷新
    uint32_t last_update; // 上次更新时间

@@ -219,8 +219,6 @@ static void TandH_cleanup_sensor_data(TandH_state_t *state)
         return;
     }
     
-    // 传感器管理由全局SensorData任务处理，无需在此清理
-    
     printf("TandH sensor data cleaned up\r\n");
 }
 
