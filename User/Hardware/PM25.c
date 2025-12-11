@@ -126,7 +126,7 @@ float PM25_ReadPM25(void)
     GPIO_SetBits(PM25_LED_PORT, PM25_LED_PIN);
     
     // 调试信息
-    printf("PM25 DEBUG: ADC Raw=%d, Voltage=%.3fV\n", adc_raw, voltage);
+    // printf("PM25 DEBUG: ADC Raw=%d, Voltage=%.3fV\n", adc_raw, voltage);
     
     // 5. 使用标准公式计算PM2.5浓度
     // 公式：PM2.5(μg/m³) = (0.17 * Vout - 0.1) * 1000

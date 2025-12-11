@@ -302,8 +302,6 @@ static void TandH_display_info(void *context)
     // 横向湿度条
     OLED_DrawHumidityBar_Line3(state->last_date_H);
     //发布数据到巴法云
-     char data[16];
-     snprintf(data,sizeof(data),"#%d.%d#%d",state->temp_int,state->temp_deci,state->humi_int);
-     ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5","mydht004",data);
+     
 
 }

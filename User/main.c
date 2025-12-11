@@ -100,7 +100,7 @@ int main(void)
                 (const char *)"Menu_Main",               /* 任务名称 */
                 (uint16_t)2024,                          /* 任务堆栈大小 */
                 (void *)NULL,                           /* 任务函数参数 */
-                (UBaseType_t)3,                         /* 任务优先级 */
+                (UBaseType_t)4,                         /* 任务优先级 */
                 (TaskHandle_t *)&Menu_handle);           /* 任务控制句柄 */
     xTaskCreate(Key_Main_Task, "KeyMain", 128, NULL, 4, &Key_handle);
 
@@ -149,10 +149,11 @@ static void ESP8266_Main_Task(void *pvParameters)
     uint8_t first = 1;
     TickType_t heart_tick = xTaskGetTickCount();    // 
     TickType_t Publish_tick = xTaskGetTickCount();
+
     vTaskDelay(pdMS_TO_TICKS(2000)); // 等待ESP8266开机
     ESP8266_Receive_Start();
     
-    if (ESP8266_Connect_WiFi("sgwl.az", "798798798") != 1) // 连接WiFi
+    if (ESP8266_Connect_WiFi("ElevatedNetwork.lt", "798798798") != 1) // 连接WiFi
     {
         printf("ESP8266 Connect WiFi Error\r\n");
         OLED_Printf_Line(0, "WiFi Error!");
@@ -174,10 +175,29 @@ static void ESP8266_Main_Task(void *pvParameters)
     printf("ESP8266 Connect Server Success\r\n");
     if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "mydht004") != 1) // 订阅主题
     {
-        printf("ESP8266 TCP Subscribe Error\r\n");
+        printf("ESP8266 TCP Subscribe  mydht004 Error\r\n");
         return ;
     }
-    printf("ESP8266 TCP Subscribe Success\r\n");
+    printf("ESP8266 TCP Subscribe  mydht004 Success\r\n");
+
+    //
+ if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "myMP25004") != 1) // 订阅主题
+    {
+        printf("ESP8266 TCP Subscribe  myMP25004 Error\r\n");
+        return ;
+    }
+    printf("ESP8266 TCP Subscribe  myMP25004 Success\r\n");
+
+    //
+
+ if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "myLUX004") != 1) // 订阅主题
+    {
+        printf("ESP8266 TCP Subscribe  myLuxGet Error\r\n");
+        return ;
+    }
+    printf("ESP8266 TCP Subscribe  myLuxGet Success\r\n");
+
+
 
     char time_buffer[64];
     if (ESP8266_TCP_GetTime("4af24e3731744508bd519435397e4ab5", time_buffer, sizeof(time_buffer)) != 1)
@@ -207,20 +227,59 @@ static void ESP8266_Main_Task(void *pvParameters)
             ESP8266_TCP_Heartbeat();            
         }
 
-        if ((xTaskGetTickCount() - Publish_tick) / 1000 >= 300 || first)
+        if ((xTaskGetTickCount() - Publish_tick) / 1000 >= 15 || first)
         {
             // 发布主题
             Publish_tick = xTaskGetTickCount();
             first = 0;
 
-            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "mydht004", "#512#66") != 1) // 发布主题
+            //
+
+             
+           
+    
+            char data[16];
+            //发布主题 :mydht004
+            snprintf(data,sizeof(data),"#%d.%d#%d",
+            SensorData.dht11_data.temp_int,
+            SensorData.dht11_data.temp_deci,
+            SensorData.dht11_data.humi_int);
+
+            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "mydht004", data) != 1) // 发布主题
             {
-                printf("ESP8266 TCP Publish Error\r\n");
+                printf("ESP8266 TCP Publish mydht004 Error\r\n");
             }
             else
             {
-                printf("ESP8266 TCP Publish Success\r\n");
+                printf("ESP8266 TCP Publish mydht004 Success\r\n");
             }
+            //发布主题 :myLuxGet
+            snprintf(data,sizeof(data),"#%d",
+            SensorData.light_data.lux);
+
+            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "myLUX004", data) != 1) // 发布主题
+            {
+                printf("ESP8266 TCP Publish myLuxGet Error\r\n");
+            }
+            else
+            {
+                printf("ESP8266 TCP Publish myLuxGet Success\r\n");
+            }
+
+            //发布主题 : myMP25004
+            snprintf(data,sizeof(data),"#%0.1f#%d",
+            SensorData.pm25_data.pm25_value,
+            SensorData.pm25_data.level);
+            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "myMP25004", data) != 1) // 发布主题
+            {
+                printf("ESP8266 TCP Publish myMP25004 Error\r\n");
+            }
+            else
+            {
+                printf("ESP8266 TCP Publish myMP25004 Success\r\n");
+            }
+
+
         }
         if (uart2_rx_len > 0)
         {

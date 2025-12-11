@@ -15,7 +15,8 @@
                 "${workspaceFolder}/User/ui/Inc",
                 "${workspaceFolder}/User/Hardware/MPU6050",
                 "${workspaceFolder}/User/alarm",
-                "${workspaceFolder}/User/alarm/Inc"
+                "${workspaceFolder}/User/alarm/Inc",
+                "${workspaceFolder}/User/SensorData"
             ],
             "defines": [
                 "USE_STDPERIPH_DRIVER"

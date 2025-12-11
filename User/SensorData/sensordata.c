@@ -26,22 +26,23 @@ static void SensorData_Task(void *pvParameters)
     {
         // 读取DHT11温湿度数据
         if (Read_DHT11(&SensorData.dht11_data) != 0)
-        {
-            printf("DHT11 read failed\r\n");
-        }
-        else
-        {
-            printf("Temperature: %d.%dC, Humidity: %d.%d%%\r\n", 
-                   SensorData.dht11_data.temp_int, SensorData.dht11_data.temp_deci,
-                   SensorData.dht11_data.humi_int, SensorData.dht11_data.humi_deci);
-        }
+        {}
+        // {
+        //     printf("DHT11 read failed\r\n");
+        // }
+        // else
+        // {
+        //     printf("Temperature: %d.%dC, Humidity: %d.%d%%\r\n", 
+        //            SensorData.dht11_data.temp_int, SensorData.dht11_data.temp_deci,
+        //            SensorData.dht11_data.humi_int, SensorData.dht11_data.humi_deci);
+        // }
         
         // 读取光照强度数据
         // 配置ADC通道1 (PA1) 用于光照传感器
         ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_55Cycles5);
         uint16_t lux_value = Light_GetLux();
         SensorData.light_data.lux = lux_value;
-        printf("Light: %d lux\r\n", SensorData.light_data.lux);
+        // printf("Light: %d lux\r\n", SensorData.light_data.lux);
         // 读取PM2.5数据
         // // 开启PM2.5 LED (低电平有效)
         // GPIO_ResetBits(GPIOC, GPIO_Pin_13);
@@ -62,9 +63,9 @@ static void SensorData_Task(void *pvParameters)
         SensorData.pm25_data.level = PM25_GetLevelFromValue(SensorData.pm25_data.pm25_value);
         // SensorData.pm25_data.voltage = voltage;
         // SensorData.pm25_data.adc_raw = adc_raw;
-        printf("PM2.5: %.1f ug/m3, Level: %d\r\n", 
-                   SensorData.pm25_data.pm25_value, SensorData.pm25_data.level);
-        printf("-------------\r\n");
+        // printf("PM2.5: %.1f ug/m3, Level: %d\r\n", 
+        //            SensorData.pm25_data.pm25_value, SensorData.pm25_data.level);
+        // printf("-------------\r\n");
         
         // 每2秒读取一次传感器数据
         vTaskDelay(pdMS_TO_TICKS(3000));
@@ -77,6 +78,6 @@ void SensorData_CreateTask(void)
                 (const char *)"SensorData",               /* 任务名称 */
                 (uint16_t)512,                            /* 任务堆栈大小 */
                 (void *)NULL,                             /* 任务函数参数 */
-                (UBaseType_t)2,                           /* 任务优先级 */
+                (UBaseType_t)3,                           /* 任务优先级 */
                 (TaskHandle_t *)&sensordate_handle);       /* 任务控制句柄 */
 }

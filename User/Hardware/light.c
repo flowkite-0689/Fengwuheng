@@ -134,11 +134,11 @@ static uint16_t Light_LookupLux(float r)
 {
     // 边界处理（查表范围外）
     if (r >= GL5516[0].ohm) {
-        printf("Extremely dark: r=%.1f ohm > max %d ohm, returning 1 lux\n", r, GL5516[0].ohm);
+        // printf("Extremely dark: r=%.1f ohm > max %d ohm, returning 1 lux\n", r, GL5516[0].ohm);
         return GL5516[0].lux;     // ≤1 lux
     }
     if (r <= GL5516[280].ohm) {
-        printf("Extremely bright: r=%.1f ohm < min %d ohm, returning 987 lux\n", r, GL5516[280].ohm);
+        // printf("Extremely bright: r=%.1f ohm < min %d ohm, returning 987 lux\n", r, GL5516[280].ohm);
         return GL5516[280].lux; // ≥987 lux
     }
 
@@ -160,7 +160,7 @@ static uint16_t Light_LookupLux(float r)
     float ratio = (p1->ohm - r) / (p1->ohm - p2->ohm); // 0~1
     uint16_t lux = (uint16_t)(p1->lux + ratio * (p2->lux - p1->lux) + 0.5f);
     
-    printf("Normal range: r=%.1f ohm between [%d,%d], lux=%d\n", r, p2->ohm, p1->ohm, lux);
+    // printf("Normal range: r=%.1f ohm between [%d,%d], lux=%d\n", r, p2->ohm, p1->ohm, lux);
     return lux;
 }
 
@@ -172,7 +172,7 @@ uint16_t Light_GetLux(void)
     uint16_t lux = Light_LookupLux(r);
     
     // 调试信息
-    printf("ADC: %d, R: %.1f ohm, Lux: %d\n", adc_val, r, lux);
+    // printf("ADC: %d, R: %.1f ohm, Lux: %d\n", adc_val, r, lux);
     
     return lux;
 }
