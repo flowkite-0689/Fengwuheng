@@ -241,6 +241,15 @@ static void Light_display_info(void *context)
   OLED_Clear_Line(2);
   OLED_Printf_Line(2, "Level: %s", light_desc);
   OLED_Clear_Line(3);
+  if (SensorData.light_data.lux < 200)
+  {
+    OLED_ShowPicture(96,32,32,32,gImage_moon,1);
+  }else
+  {
+    OLED_ShowPicture(96,32,32,32,gImage_sun,1);
+  }
+  
+  
   
   // 渐进式更新光照显示值，避免突变
   if (SensorData.light_data.lux > state->last_date_L)

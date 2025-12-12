@@ -105,7 +105,7 @@ int main(void)
                 (void *)NULL,                   /* 任务函数参数 */
                 (UBaseType_t)4,                 /* 任务优先级 */
                 (TaskHandle_t *)&Menu_handle);  /* 任务控制句柄 */
-    xTaskCreate(Key_Main_Task, "KeyMain", 128, NULL, 4, &Key_handle);
+    xTaskCreate(Key_Main_Task, "KeyMain", 96, NULL, 4, &Key_handle);
 
     printf("creat task OK\n");
 
@@ -240,37 +240,178 @@ static void ESP8266_Main_Task(void *pvParameters)
     }
 
     printf("ESP8266 Connect Server Success\r\n");
-    if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "mydht004") != 1) // 订阅主题
+   // ====================== 订阅主题1：mydht004（带重试） ======================
+    retry_count = 0;
+    uint8_t sub1_connected = 0;
+    const char* uid = "4af24e3731744508bd519435397e4ab5";
+    const char* topic1 = "mydht004";
+    
+    while (!sub1_connected && retry_count < max_retries)
     {
-        printf("ESP8266 TCP Subscribe  mydht004 Error\r\n");
-        return;
+        retry_count++;
+        printf("Subscribe %s attempt %d/%d\r\n", topic1, retry_count, max_retries);
+        
+        if (ESP8266_TCP_Subscribe(uid, topic1) == 1) // 订阅主题
+        {
+            printf("ESP8266 TCP Subscribe %s Success\r\n", topic1);
+            sub1_connected = 1;
+        }
+        else
+        {
+            printf("ESP8266 TCP Subscribe %s Error, attempt %d/%d\r\n", topic1, retry_count, max_retries);
+            if (retry_count < max_retries)
+            {
+                // 等待5秒后重试
+                vTaskDelay(pdMS_TO_TICKS(5000));
+            }
+        }
     }
-    printf("ESP8266 TCP Subscribe  mydht004 Success\r\n");
 
-    //
-    if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "myMP25004") != 1) // 订阅主题
+    if (!sub1_connected)
     {
-        printf("ESP8266 TCP Subscribe  myMP25004 Error\r\n");
-        return;
+        printf("Subscribe %s failed after %d attempts, entering retry loop\r\n", topic1, max_retries);
+
+        // 进入无限重试循环
+        while (!sub1_connected)
+        {
+            vTaskDelay(pdMS_TO_TICKS(30000)); // 每30秒重试一次
+            printf("Retrying subscribe %s...\r\n", topic1);
+            if (ESP8266_TCP_Subscribe(uid, topic1) == 1)
+            {
+                printf("ESP8266 TCP Subscribe %s Success after retry\r\n", topic1);
+                sub1_connected = 1;
+            }
+        }
     }
-    printf("ESP8266 TCP Subscribe  myMP25004 Success\r\n");
 
-    //
-
-    if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "myLUX004") != 1) // 订阅主题
+    // ====================== 订阅主题2：myMP25004（带重试） ======================
+    retry_count = 0;
+    uint8_t sub2_connected = 0;
+    const char* topic2 = "myMP25004";
+    
+    while (!sub2_connected && retry_count < max_retries)
     {
-        printf("ESP8266 TCP Subscribe  myLuxGet Error\r\n");
-        return;
+        retry_count++;
+        printf("Subscribe %s attempt %d/%d\r\n", topic2, retry_count, max_retries);
+        
+        if (ESP8266_TCP_Subscribe(uid, topic2) == 1) // 订阅主题
+        {
+            printf("ESP8266 TCP Subscribe %s Success\r\n", topic2);
+            sub2_connected = 1;
+        }
+        else
+        {
+            printf("ESP8266 TCP Subscribe %s Error, attempt %d/%d\r\n", topic2, retry_count, max_retries);
+            if (retry_count < max_retries)
+            {
+                // 等待5秒后重试
+                vTaskDelay(pdMS_TO_TICKS(5000));
+            }
+        }
     }
-    printf("ESP8266 TCP Subscribe  myLuxGet Success\r\n");
 
+    if (!sub2_connected)
+    {
+        printf("Subscribe %s failed after %d attempts, entering retry loop\r\n", topic2, max_retries);
+
+        // 进入无限重试循环
+        while (!sub2_connected)
+        {
+            vTaskDelay(pdMS_TO_TICKS(30000)); // 每30秒重试一次
+            printf("Retrying subscribe %s...\r\n", topic2);
+            if (ESP8266_TCP_Subscribe(uid, topic2) == 1)
+            {
+                printf("ESP8266 TCP Subscribe %s Success after retry\r\n", topic2);
+                sub2_connected = 1;
+            }
+        }
+    }
+
+    // ====================== 订阅主题3：myLUX004（带重试） ======================
+    retry_count = 0;
+    uint8_t sub3_connected = 0;
+    const char* topic3 = "myLUX004";
+    
+    while (!sub3_connected && retry_count < max_retries)
+    {
+        retry_count++;
+        printf("Subscribe %s attempt %d/%d\r\n", topic3, retry_count, max_retries);
+        
+        if (ESP8266_TCP_Subscribe(uid, topic3) == 1) // 订阅主题
+        {
+            printf("ESP8266 TCP Subscribe %s Success\r\n", topic3);
+            sub3_connected = 1;
+        }
+        else
+        {
+            printf("ESP8266 TCP Subscribe %s Error, attempt %d/%d\r\n", topic3, retry_count, max_retries);
+            if (retry_count < max_retries)
+            {
+                // 等待5秒后重试
+                vTaskDelay(pdMS_TO_TICKS(5000));
+            }
+        }
+    }
+
+    if (!sub3_connected)
+    {
+        printf("Subscribe %s failed after %d attempts, entering retry loop\r\n", topic3, max_retries);
+
+        // 进入无限重试循环
+        while (!sub3_connected)
+        {
+            vTaskDelay(pdMS_TO_TICKS(30000)); // 每30秒重试一次
+            printf("Retrying subscribe %s...\r\n", topic3);
+            if (ESP8266_TCP_Subscribe(uid, topic3) == 1)
+            {
+                printf("ESP8266 TCP Subscribe %s Success after retry\r\n", topic3);
+                sub3_connected = 1;
+            }
+        }
+    }
+
+    // ====================== 获取时间（带重试） ======================
+    retry_count = 0;
+    uint8_t get_time_success = 0;
     char time_buffer[64];
-    if (ESP8266_TCP_GetTime("4af24e3731744508bd519435397e4ab5", time_buffer, sizeof(time_buffer)) != 1)
+    
+    while (!get_time_success && retry_count < max_retries)
     {
-        printf("ESP8266 Get Time Error\r\n");
-        return;
+        retry_count++;
+        printf("Get Time attempt %d/%d\r\n", retry_count, max_retries);
+        
+        if (ESP8266_TCP_GetTime(uid, time_buffer, sizeof(time_buffer)) == 1)
+        {
+            printf("ESP8266 Get Time Success: %s\r\n", time_buffer);
+            get_time_success = 1;
+        }
+        else
+        {
+            printf("ESP8266 Get Time Error, attempt %d/%d\r\n", retry_count, max_retries);
+            if (retry_count < max_retries)
+            {
+                // 等待5秒后重试
+                vTaskDelay(pdMS_TO_TICKS(5000));
+            }
+        }
     }
-    printf("ESP8266 Get Time Success: %s\r\n", time_buffer);
+
+    if (!get_time_success)
+    {
+        printf("Get Time failed after %d attempts, entering retry loop\r\n", max_retries);
+
+        // 进入无限重试循环
+        while (!get_time_success)
+        {
+            vTaskDelay(pdMS_TO_TICKS(30000)); // 每30秒重试一次
+            printf("Retrying Get Time...\r\n");
+            if (ESP8266_TCP_GetTime(uid, time_buffer, sizeof(time_buffer)) == 1)
+            {
+                printf("ESP8266 Get Time Success after retry: %s\r\n", time_buffer);
+                get_time_success = 1;
+            }
+        }
+    }
 
     // 同步到RTC
     if (RTC_SetFromNetworkTime(time_buffer) != 1)
@@ -304,7 +445,7 @@ static void ESP8266_Main_Task(void *pvParameters)
             // 发布主题 :mydht004
             if (DHT11_ON)
             {
-                snprintf(data, sizeof(data), "#%d.%d#%d",
+                snprintf(data, sizeof(data), "on#%d.%d#%d",
                          SensorData.dht11_data.temp_int,
                          SensorData.dht11_data.temp_deci,
                          SensorData.dht11_data.humi_int);
