@@ -1,6 +1,9 @@
 #include "TandH.h"
 #include "esp8266.h"
 
+// 声明外部变量
+extern uint8_t DHT11_ON;
+
 // 定义静态状态变量，避免动态内存分配
 TandH_state_t g_tandh_state = {0};
 // ==================================

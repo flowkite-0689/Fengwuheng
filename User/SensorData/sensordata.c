@@ -5,9 +5,9 @@
 #include "stm32f10x_gpio.h"
 
 static TaskHandle_t sensordate_handle = NULL;
-extern uint8_t DHT11_ON = 1;
-extern uint8_t Light_ON = 1;
-extern uint8_t PM25_ON = 1;
+uint8_t DHT11_ON = 1;
+uint8_t Light_ON = 1;
+uint8_t PM25_ON = 1;
 SensorData_TypeDef SensorData;
 
 void SensorData_Init(void)
@@ -26,6 +26,14 @@ static void SensorData_Task(void *pvParameters)
 
     while (1)
     {
+        // 打印当前传感器状态，用于调试
+        // static uint32_t last_debug_print = 0;
+        // uint32_t current_tick = xTaskGetTickCount();
+        // if (current_tick - last_debug_print > pdMS_TO_TICKS(5000)) { // 每5秒打印一次
+        //     printf("SensorData_Task: DHT11_ON=%d, Light_ON=%d, PM25_ON=%d\r\n", DHT11_ON, Light_ON, PM25_ON);
+        //     last_debug_print = current_tick;
+        // }
+        
         // 读取DHT11温湿度数据
         if (DHT11_ON)
         {

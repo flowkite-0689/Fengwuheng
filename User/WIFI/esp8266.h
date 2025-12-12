@@ -8,6 +8,7 @@
 #include "uart2.h"
 #include "stm32f10x.h"
 #include <stdint.h>
+#include "sensordata.h"
 extern uint8_t uart2_buffer[UART2_BUF_SIZE]; // uart2接收缓冲
 extern uint8_t uart2_rx_len;     // uart2接收长度
 
@@ -21,4 +22,8 @@ uint8_t ESP8266_TCP_Subscribe(char *uid, char *topic);
 uint8_t ESP8266_TCP_Publish(char *uid, char *topic, char *data);
 uint8_t ESP8266_TCP_Heartbeat(void);
 uint8_t ESP8266_TCP_GetTime(char *uid, char *time_buffer, uint16_t buffer_size);
+
+// 新增消息解析函数
+uint8_t ESP8266_Parse_Command(const char *buffer, const char *topic, char *msg_value);
+uint8_t ESP8266_Process_Sensor_Commands(const char *buffer);
 #endif 

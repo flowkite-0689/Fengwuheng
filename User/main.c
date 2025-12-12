@@ -19,6 +19,11 @@
 // 创建队列来存储按键事件
 QueueHandle_t keyQueue; // 按键队列
 
+// 验证传感器状态变量的可访问性
+extern uint8_t DHT11_ON;
+extern uint8_t Light_ON; 
+extern uint8_t PM25_ON;
+
 static TaskHandle_t Menu_handle = NULL;
 static TaskHandle_t Key_handle = NULL;
 static TaskHandle_t ESP8266_handle = NULL;
@@ -27,7 +32,6 @@ static TaskHandle_t ESP8266_handle = NULL;
 static void Menu_Main_Task(void *pvParameters);
 static void Key_Main_Task(void *pvParameters);
 static void ESP8266_Main_Task(void *pvParameters);
-
 
 int main(void)
 {
@@ -108,11 +112,14 @@ int main(void)
     // 创建传感器数据采集任务
     SensorData_CreateTask();
     printf("SensorData task created\n");
+    
+    // 打印传感器初始状态
+    printf("Initial sensor states: DHT11=%d, Light=%d, PM25=%d\n", DHT11_ON, Light_ON, PM25_ON);
 
     // 创建ESP8266任务
     xTaskCreate((TaskFunction_t)ESP8266_Main_Task, /* 任务函数 */
                 (const char *)"ESP8266_Main",      /* 任务名称 */
-                (uint16_t)300,                     /* 任务堆栈大小 */
+                (uint16_t)384,                     /* 任务堆栈大小 */
                 (void *)NULL,                      /* 任务参数 */
                 (UBaseType_t)2,                    /* 任务优先级 */
                 (TaskHandle_t *)&ESP8266_handle);  /* 任务句柄 */
@@ -151,15 +158,15 @@ static void ESP8266_Main_Task(void *pvParameters)
 
     vTaskDelay(pdMS_TO_TICKS(2000)); // 等待ESP8266开机
     ESP8266_Receive_Start();
-    
+
     uint8_t retry_count = 0;
     const uint8_t max_retries = 5;
-    
+
     while (!wifi_connected && retry_count < max_retries)
     {
         retry_count++;
         printf("WiFi connection attempt %d/%d\r\n", retry_count, max_retries);
-        
+
         if (ESP8266_Connect_WiFi("ElevatedNetwork.lt", "798798798") == 1) // 连接WiFi
         {
             printf("ESP8266 Connect WiFi Success\r\n");
@@ -175,12 +182,11 @@ static void ESP8266_Main_Task(void *pvParameters)
             }
         }
     }
-    
+
     if (!wifi_connected)
     {
         printf("WiFi connection failed after %d attempts, entering retry loop\r\n", max_retries);
-        
-        
+
         // 进入无限重试循环
         while (!wifi_connected)
         {
@@ -213,7 +219,6 @@ static void ESP8266_Main_Task(void *pvParameters)
             {
                 // 等待5秒后重试
                 vTaskDelay(pdMS_TO_TICKS(5000));
-
             }
         }
     }
@@ -221,7 +226,7 @@ static void ESP8266_Main_Task(void *pvParameters)
     if (!Server_connected)
     {
         printf("Server connection failed after %d attempts, entering retry loop\r\n", max_retries);
-       
+
         while (!Server_connected)
         {
             vTaskDelay(pdMS_TO_TICKS(30000)); // 每30秒重试一次
@@ -233,7 +238,7 @@ static void ESP8266_Main_Task(void *pvParameters)
             }
         }
     }
-    
+
     printf("ESP8266 Connect Server Success\r\n");
     if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "mydht004") != 1) // 订阅主题
     {
@@ -296,49 +301,67 @@ static void ESP8266_Main_Task(void *pvParameters)
 
             char data[16];
             // 发布主题 :mydht004
-            snprintf(data, sizeof(data), "#%d.%d#%d",
-                     SensorData.dht11_data.temp_int,
-                     SensorData.dht11_data.temp_deci,
-                     SensorData.dht11_data.humi_int);
+            if (DHT11_ON)
+            {
+                snprintf(data, sizeof(data), "#%d.%d#%d",
+                         SensorData.dht11_data.temp_int,
+                         SensorData.dht11_data.temp_deci,
+                         SensorData.dht11_data.humi_int);
 
-            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "mydht004", data) != 1) // 发布主题
-            {
-                printf("ESP8266 TCP Publish mydht004 Error\r\n");
+                if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "mydht004", data) != 1) // 发布主题
+                {
+                    printf("ESP8266 TCP Publish mydht004 Error\r\n");
+                }
+                else
+                {
+                    printf("ESP8266 TCP Publish mydht004 Success\r\n");
+                }
             }
-            else
+            if (Light_ON)
             {
-                printf("ESP8266 TCP Publish mydht004 Success\r\n");
-            }
-            // 发布主题 :myLuxGet
-            snprintf(data, sizeof(data), "#%d",
-                     SensorData.light_data.lux);
+                // 发布主题 :myLuxGet
+                snprintf(data, sizeof(data), "#%d",
+                         SensorData.light_data.lux);
 
-            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "myLUX004", data) != 1) // 发布主题
-            {
-                printf("ESP8266 TCP Publish myLuxGet Error\r\n");
+                if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "myLUX004", data) != 1) // 发布主题
+                {
+                    printf("ESP8266 TCP Publish myLuxGet Error\r\n");
+                }
+                else
+                {
+                    printf("ESP8266 TCP Publish myLuxGet Success\r\n");
+                }
             }
-            else
+            if (PM25_ON)
             {
-                printf("ESP8266 TCP Publish myLuxGet Success\r\n");
-            }
-
-            // 发布主题 : myMP25004
-            snprintf(data, sizeof(data), "#%0.1f#%d",
-                     SensorData.pm25_data.pm25_value,
-                     SensorData.pm25_data.level);
-            if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "myMP25004", data) != 1) // 发布主题
-            {
-                printf("ESP8266 TCP Publish myMP25004 Error\r\n");
-            }
-            else
-            {
-                printf("ESP8266 TCP Publish myMP25004 Success\r\n");
+                // 发布主题 : myMP25004
+                snprintf(data, sizeof(data), "#%0.1f#%d",
+                         SensorData.pm25_data.pm25_value,
+                         SensorData.pm25_data.level);
+                if (ESP8266_TCP_Publish("4af24e3731744508bd519435397e4ab5", "myMP25004", data) != 1) // 发布主题
+                {
+                    printf("ESP8266 TCP Publish myMP25004 Error\r\n");
+                }
+                else
+                {
+                    printf("ESP8266 TCP Publish myMP25004 Success\r\n");
+                }
             }
         }
         if (uart2_rx_len > 0)
         {
             uart2_rx_len = 0;
             printf("ESP8266 Receive Data: %s\r\n", uart2_buffer); // 收到巴法云下发的数据
+            
+            // 使用新的统一消息解析函数处理传感器命令
+            uint8_t result = ESP8266_Process_Sensor_Commands((const char *)uart2_buffer);
+            if (result == 1) {
+                printf("Command processed successfully. Current sensor states: DHT11=%d, Light=%d, PM25=%d\r\n", 
+                       DHT11_ON, Light_ON, PM25_ON);
+            } else {
+                printf("No matching sensor command found\r\n");
+            }
+            
         }
         vTaskDelay(pdMS_TO_TICKS(1));
     }

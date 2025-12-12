@@ -9,6 +9,11 @@
 #include "oled_print.h"
 #include "sensordata.h"
 
+// 声明外部传感器状态变量
+extern uint8_t DHT11_ON;
+extern uint8_t Light_ON;
+extern uint8_t PM25_ON;
+
 typedef struct
 {
    int16_t last_date_PM;

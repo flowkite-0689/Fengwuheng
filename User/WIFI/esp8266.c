@@ -210,3 +210,128 @@ uint8_t ESP8266_TCP_GetTime(char *uid, char *time_buffer, uint16_t buffer_size)
     uart2_rx_len = 0; // 清空接收缓冲
     return 0;
 }
+
+// ==================================
+// 新增消息解析函数
+// ==================================
+
+/**
+ * @brief 解析命令字符串中的指定参数
+ * @param buffer 接收到的命令字符串
+ * @param topic 需要查找的topic
+ * @param msg_value 存储找到的msg值
+ * @return 1-成功找到参数，0-未找到
+ */
+uint8_t ESP8266_Parse_Command(const char *buffer, const char *topic, char *msg_value)
+{
+    if (buffer == NULL || topic == NULL || msg_value == NULL) {
+        return 0;
+    }
+    
+    // 创建临时字符串进行查找
+    char temp_topic[64];
+    snprintf(temp_topic, sizeof(temp_topic), "topic=%s", topic);
+    
+    printf("Looking for topic: %s in buffer: %s\r\n", temp_topic, buffer);  // 添加调试信息
+    
+    // 检查是否包含指定的topic
+    if (strstr(buffer, temp_topic) == NULL) {
+        printf("Topic not found\r\n");  // 添加调试信息
+        return 0;
+    }
+    
+    printf("Topic found!\r\n");  // 添加调试信息
+    
+    // 查找msg参数
+    const char *msg_start = strstr(buffer, "msg=");
+    if (msg_start == NULL) {
+        printf("msg parameter not found\r\n");  // 添加调试信息
+        return 0;
+    }
+    
+    // 跳过"msg="前缀
+    msg_start += 4;
+    
+    // 提取msg值（直到遇到&或\r或\n或字符串结束）
+    int i = 0;
+    while (msg_start[i] != '\0' && msg_start[i] != '&' && msg_start[i] != '\r' && msg_start[i] != '\n' && i < 31) {
+        msg_value[i] = msg_start[i];
+        i++;
+    }
+    msg_value[i] = '\0';
+    
+    printf("Extracted msg_value: %s\r\n", msg_value);  // 添加调试信息
+    
+    return 1;
+}
+
+/**
+ * @brief 处理传感器相关的远程命令
+ * @param buffer 接收到的命令字符串
+ * @return 1-成功处理命令，0-未处理
+ */
+uint8_t ESP8266_Process_Sensor_Commands(const char *buffer)
+{
+    if (buffer == NULL) {
+        return 0;
+    }
+    
+    printf("Processing command: %s\r\n", buffer);  // 添加调试信息
+    
+    char msg_value[32] = {0};
+    
+    // 处理DHT11传感器
+    if (ESP8266_Parse_Command(buffer, "mydht004", msg_value)) {
+        printf("Found DHT11 topic, msg_value: %s\r\n", msg_value);  // 添加调试信息
+        extern uint8_t DHT11_ON;
+        printf("Before change - DHT11_ON = %d\r\n", DHT11_ON);  // 修改变量前的值
+        printf("Comparing msg_value: '%s' with 'on' and 'off'\r\n", msg_value);
+        printf("strcmp(msg_value, \"on\") = %d\r\n", strcmp(msg_value, "on"));
+        printf("strcmp(msg_value, \"off\") = %d\r\n", strcmp(msg_value, "off"));
+        
+        if (strcmp(msg_value, "on") == 0) {
+            DHT11_ON = 1;
+            printf("DHT11 sensor turned ON via remote command, current status: %d\r\n", DHT11_ON);
+            return 1;
+        } else if (strcmp(msg_value, "off") == 0) {
+            DHT11_ON = 0;
+            printf("DHT11 sensor turned OFF via remote command, current status: %d\r\n", DHT11_ON);
+            return 1;
+        } else {
+            printf("Invalid msg_value: '%s'\r\n", msg_value);
+        }
+        return 1; // 确保即使msg值不匹配也返回
+    }
+    
+    // 处理Light传感器
+    if (ESP8266_Parse_Command(buffer, "myLUX004", msg_value)) {
+        printf("Found Light topic, msg_value: %s\r\n", msg_value);  // 添加调试信息
+        extern uint8_t Light_ON;
+        if (strcmp(msg_value, "on") == 0) {
+            Light_ON = 1;
+            printf("Light sensor turned ON via remote command, current status: %d\r\n", Light_ON);
+            return 1;
+        } else if (strcmp(msg_value, "off") == 0) {
+            Light_ON = 0;
+            printf("Light sensor turned OFF via remote command, current status: %d\r\n", Light_ON);
+            return 1;
+        }
+        return 1; // 确保即使msg值不匹配也返回
+    }
+    
+    // 处理PM2.5传感器
+    if (ESP8266_Parse_Command(buffer, "myMP25004", msg_value)) {
+        extern uint8_t PM25_ON;
+        if (strcmp(msg_value, "on") == 0) {
+            PM25_ON = 1;
+            printf("PM25 sensor turned ON via remote command\r\n");
+            return 1;
+        } else if (strcmp(msg_value, "off") == 0) {
+            PM25_ON = 0;
+            printf("PM25 sensor turned OFF via remote command\r\n");
+            return 1;
+        }
+    }
+    
+    return 0;
+}
