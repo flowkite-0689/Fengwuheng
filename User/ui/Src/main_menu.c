@@ -13,8 +13,8 @@
 #include "TandH.h"
 #include "setting_menu.h"
 #include "testlist_menu.h"
-#include "Light.h"
-#include "PM25.h"
+#include "Light_page.h"
+#include "PM25_page.h"
 // ==================================
 // 图标数组
 // ==================================
@@ -23,7 +23,7 @@ const unsigned char *main_menu_icons[] = {
     gImage_setting, // 设置
     gImage_TandH,   // 温湿度
     gImage_lightQD, // 光照强度
-    gImage_test     // 测试
+    gImage_pm25     // 测试
 };
 
 const char *main_menu_names[] = {
@@ -77,7 +77,7 @@ menu_item_t *main_menu_init(void)
     menu_item_t *PM25_page = PM25_init();
     if (PM25_page != NULL)
     {
-        PM25_page->content.custom.icon_data = gImage_test; // 使用test图标作为占位符
+        PM25_page->content.custom.icon_data = gImage_pm25; // 使用test图标作为占位符
         menu_add_child(main_menu, PM25_page);
     }
 
@@ -90,41 +90,6 @@ menu_item_t *main_menu_init(void)
         menu_add_child(main_menu, setting_menu);
     }
 
-    // 创建各个子菜单项
-    // for (uint8_t i = 0; i < MAIN_MENU_COUNT; i++) {
-    //     menu_item_t* menu_item = MENU_ITEM_ICON(
-    //         main_menu_names[i],
-    //         main_menu_icons[i],
-    //         32,  // 图标宽度
-    //         32   // 图标高度
-    //     );
-
-    //     if (menu_item != NULL) {
-    //         // 设置回调函数
-    //         menu_item_set_callbacks(menu_item,
-    //                                NULL,               // 进入回调（不需要特殊处理）
-    //                                NULL,               // 退出回调（不需要特殊处理）
-    //                                NULL,               // 选中回调（不需要特殊处理）
-    //                                NULL);
-
-    //         if (i == MAIN_MENU_TEMPHUMI) { // "Temp&Humid" 是第3个菜单项（索引2）
-
-    //         }
-    //         if (i == MAIN_MENU_SETTINGS)
-    //         {
-
-    //         }
-
-    //         if (i == MAIN_MENU_TEST)
-    //         {
-
-    //         }
-
-    //         // 添加到主菜单
-    //         menu_add_child(main_menu, menu_item);
-
-    //     }
-    // }
 
     return main_menu;
 }
