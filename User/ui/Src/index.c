@@ -294,7 +294,6 @@ static void index_display_time_info(void)
         }
         else
         {
-            printf("\n\n\n\n\n------\n------");
             OLED_Clear_Rect(0, 32, 32, 64);
         }
         if (PM25_ON)

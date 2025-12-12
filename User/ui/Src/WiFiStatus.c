@@ -243,10 +243,13 @@ static uint8_t WiFiStatus_sync_time(void)
     {
         retry_count++;
         printf("WiFiStatus: Get Time attempt %d/%d\r\n", retry_count, max_retries);
-        
+        OLED_Printf_Line(0, " Get Time attempt %d/%d", retry_count, max_retries);
+        OLED_Printf_Line(1, " getting ...");
         if (ESP8266_TCP_GetTime("1", state->time_buffer, sizeof(state->time_buffer)) == 1)
         {
             printf("WiFiStatus: ESP8266 Get Time Success: %s\r\n", state->time_buffer);
+            OLED_Printf_Line(0, " Get Time Success");
+                OLED_Printf_Line(1, " %s", state->time_buffer);
             get_time_success = 1;
         }
         else
@@ -271,7 +274,9 @@ static uint8_t WiFiStatus_sync_time(void)
             printf("WiFiStatus: Retrying Get Time...\r\n");
             if (ESP8266_TCP_GetTime("1", state->time_buffer, sizeof(state->time_buffer)) == 1)
             {
-                printf("WiFiStatus: ESP8266 Get Time Success after retry: %s\r\n", state->time_buffer);
+                
+                printf("WiFiStatus: ESP8266 after retry: %s\r\n", state->time_buffer);
+                
                 get_time_success = 1;
             }
         }
@@ -280,12 +285,15 @@ static uint8_t WiFiStatus_sync_time(void)
     // 同步到RTC
     if (RTC_SetFromNetworkTime(state->time_buffer) != 1)
     {
+       
+        OLED_Printf_Line(0," RTC Sync Failed");
         printf("WiFiStatus: RTC Sync Failed\r\n");
         state->time_sync_status = 0;
         return 0;
     }
     else
     {
+        OLED_Printf_Line(0," RTC Sync Success");
         printf("WiFiStatus: RTC Sync Success\r\n");
         state->time_sync_status = 1;
         state->last_time_sync = xTaskGetTickCount();
@@ -304,9 +312,7 @@ static void WiFiStatus_display_info(void *context)
     return;
   }
   
-  // 清屏并显示标题
-  // OLED_Clear();
-  OLED_Printf_Line_32(0, "WiFiStatus");
+ 
   
   // 显示WiFi连接状态
   OLED_Printf_Line(2, "WiFi: %s", state->wifi_status ? "Connected" : "Disconnected");
