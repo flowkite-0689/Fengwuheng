@@ -14,7 +14,8 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
-
+extern uint8_t Server_connected=0;
+extern uint8_t wifi_connected = 0;
 extern uint8_t uart2_buffer[UART2_BUF_SIZE]; // uart2接收缓冲
 extern uint8_t uart2_rx_len;     // uart2接收长度
 
@@ -192,7 +193,7 @@ uint8_t ESP8266_TCP_GetTime(char *uid, char *time_buffer, uint16_t buffer_size)
     if (uart2_rx_len > 0 && timeout > 0)
     {
         // 查找时间数据（格式：2021-06-11 16:39:27）
-        char *time_start = (char *)uart2_buffer;
+//        char *time_start = (char *)uart2_buffer;
         
         // 直接复制接收到的数据到输出缓冲区
         uint16_t copy_len = uart2_rx_len < buffer_size - 1 ? uart2_rx_len : buffer_size - 1;

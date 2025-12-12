@@ -16,7 +16,7 @@
 #include "unified_menu.h"
 #include "oled_print.h"
 #include "rtc_date.h"
-
+#include "sensordata.h"
 // ==================================
 // 首页状态数据结构
 // ==================================

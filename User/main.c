@@ -28,6 +28,7 @@ static void Menu_Main_Task(void *pvParameters);
 static void Key_Main_Task(void *pvParameters);
 static void ESP8266_Main_Task(void *pvParameters);
 
+
 int main(void)
 {
     // 系统初始化开始
@@ -111,7 +112,7 @@ int main(void)
     // 创建ESP8266任务
     xTaskCreate((TaskFunction_t)ESP8266_Main_Task, /* 任务函数 */
                 (const char *)"ESP8266_Main",      /* 任务名称 */
-                (uint16_t)256,                     /* 任务堆栈大小 */
+                (uint16_t)300,                     /* 任务堆栈大小 */
                 (void *)NULL,                      /* 任务参数 */
                 (UBaseType_t)2,                    /* 任务优先级 */
                 (TaskHandle_t *)&ESP8266_handle);  /* 任务句柄 */
@@ -150,7 +151,7 @@ static void ESP8266_Main_Task(void *pvParameters)
 
     vTaskDelay(pdMS_TO_TICKS(2000)); // 等待ESP8266开机
     ESP8266_Receive_Start();
-    uint8_t wifi_connected = 0;
+    
     uint8_t retry_count = 0;
     const uint8_t max_retries = 5;
     
@@ -158,9 +159,9 @@ static void ESP8266_Main_Task(void *pvParameters)
     {
         retry_count++;
         printf("WiFi connection attempt %d/%d\r\n", retry_count, max_retries);
-        OLED_Printf_Line(0, "WiFi Connecting");
-        OLED_Printf_Line(1, "Attempt %d/%d", retry_count, max_retries);
-        OLED_Refresh();
+        // OLED_Printf_Line(0, "WiFi Connecting");
+        // OLED_Printf_Line(1, "Attempt %d/%d", retry_count, max_retries);
+        // OLED_Refresh();
         
         if (ESP8266_Connect_WiFi("ElevatedNetwork.lt", "798798798") == 1) // 连接WiFi
         {
@@ -181,9 +182,7 @@ static void ESP8266_Main_Task(void *pvParameters)
     if (!wifi_connected)
     {
         printf("WiFi connection failed after %d attempts, entering retry loop\r\n", max_retries);
-        OLED_Printf_Line(0, "WiFi Failed!");
-        OLED_Printf_Line(1, "Retrying...");
-        OLED_Refresh();
+        
         
         // 进入无限重试循环
         while (!wifi_connected)
@@ -200,15 +199,44 @@ static void ESP8266_Main_Task(void *pvParameters)
         }
     }
 
-    // OLED_Printf_Line(0, "WiFi Connected!");
-    // OLED_Printf_Line(1, "ElevatedNetwork.lt");
-    // OLED_Refresh();
-
-    if (ESP8266_Connect_Server("bemfa.com", "8344") != 1) // 连接服务器
+    retry_count = 0;
+    while (!Server_connected && retry_count < max_retries)
     {
-        printf("ESP8266 Connect Server Error\r\n");
-        return;
+        retry_count++;
+        printf("Server connection attempt %d/%d\r\n", retry_count, max_retries);
+        if (ESP8266_Connect_Server("bemfa.com", "8344") == 1) // 尝试连接服务器
+        {
+            printf("ESP8266 Connect Server Success\r\n");
+            Server_connected = 1;
+        }
+        else
+        {
+            printf("ESP8266 Connect Server Error, attempt %d/%d\r\n", retry_count, max_retries);
+            if (retry_count < max_retries)
+            {
+                // 等待5秒后重试
+                vTaskDelay(pdMS_TO_TICKS(5000));
+
+            }
+        }
     }
+
+    if (!Server_connected)
+    {
+        printf("Server connection failed after %d attempts, entering retry loop\r\n", max_retries);
+       
+        while (!Server_connected)
+        {
+            vTaskDelay(pdMS_TO_TICKS(30000)); // 每30秒重试一次
+            printf("Retrying Server connection...\r\n");
+            if (ESP8266_Connect_Server("bemfa.com", "8344") == 1)
+            {
+                printf("ESP8266 Connect Server Success after retry\r\n");
+                Server_connected = 1;
+            }
+        }
+    }
+    
     printf("ESP8266 Connect Server Success\r\n");
     if (ESP8266_TCP_Subscribe("4af24e3731744508bd519435397e4ab5", "mydht004") != 1) // 订阅主题
     {
