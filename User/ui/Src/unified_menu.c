@@ -455,10 +455,12 @@ void menu_display_horizontal(menu_item_t *menu)
     // 显示中间图标（清晰）
     if (menu->children[center_index]->content.icon.icon_data)
     {
+        OLED_Printf_Line(3,"       %s",menu->children[center_index]->name);
         if (menu->children[center_index]->type == MENU_TYPE_CUSTOM)
         {
             OLED_ShowPicture(48, 16, 32, 32,
                              menu->children[center_index]->content.custom.icon_data, 0);
+
         }
         else
         {

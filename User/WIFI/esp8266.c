@@ -232,7 +232,7 @@ uint8_t ESP8266_Parse_Command(const char *buffer, const char *topic, char *msg_v
     char temp_topic[64];
     snprintf(temp_topic, sizeof(temp_topic), "topic=%s", topic);
     
-    printf("Looking for topic: %s in buffer: %s\r\n", temp_topic, buffer);  // 添加调试信息
+    // printf("Looking for topic: %s in buffer: %s\r\n", temp_topic, buffer);  // 添加调试信息
     
     // 检查是否包含指定的topic
     if (strstr(buffer, temp_topic) == NULL) {
@@ -240,7 +240,7 @@ uint8_t ESP8266_Parse_Command(const char *buffer, const char *topic, char *msg_v
         return 0;
     }
     
-    printf("Topic found!\r\n");  // 添加调试信息
+    // printf("Topic found!\r\n");  // 添加调试信息
     
     // 查找msg参数
     const char *msg_start = strstr(buffer, "msg=");
@@ -260,7 +260,7 @@ uint8_t ESP8266_Parse_Command(const char *buffer, const char *topic, char *msg_v
     }
     msg_value[i] = '\0';
     
-    printf("Extracted msg_value: %s\r\n", msg_value);  // 添加调试信息
+    // printf("Extracted msg_value: %s\r\n", msg_value);  // 添加调试信息
     
     return 1;
 }
@@ -284,10 +284,10 @@ uint8_t ESP8266_Process_Sensor_Commands(const char *buffer)
     if (ESP8266_Parse_Command(buffer, "mydht004", msg_value)) {
         printf("Found DHT11 topic, msg_value: %s\r\n", msg_value);  // 添加调试信息
         extern uint8_t DHT11_ON;
-        printf("Before change - DHT11_ON = %d\r\n", DHT11_ON);  // 修改变量前的值
-        printf("Comparing msg_value: '%s' with 'on' and 'off'\r\n", msg_value);
-        printf("strcmp(msg_value, \"on\") = %d\r\n", strcmp(msg_value, "on"));
-        printf("strcmp(msg_value, \"off\") = %d\r\n", strcmp(msg_value, "off"));
+        // printf("Before change - DHT11_ON = %d\r\n", DHT11_ON);  // 修改变量前的值
+        // printf("Comparing msg_value: '%s' with 'on' and 'off'\r\n", msg_value);
+        // printf("strcmp(msg_value, \"on\") = %d\r\n", strcmp(msg_value, "on"));
+        // printf("strcmp(msg_value, \"off\") = %d\r\n", strcmp(msg_value, "off"));
         
         if (strcmp(msg_value, "on") == 0) {
             DHT11_ON = 1;

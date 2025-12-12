@@ -16,9 +16,9 @@ void OLED_DrawLightBar_Line1(uint16_t lux)
   OLED_Clear_Line(1);
   // 标签
   OLED_ShowString(0, 16, (uint8_t *)"0", 12, 1);
-  OLED_ShowString(105, 16, (uint8_t *)"5000", 12, 1);
+  OLED_ShowString(105, 16, (uint8_t *)"987", 12, 1);
   // 进度条：x=25, y=18, w=78, h=8, 0~5000 lux
-  OLED_DrawProgressBar(22, 18, 78, 8, lux, 0, 5000, 1, 1,1);
+  OLED_DrawProgressBar(22, 18, 78, 8, lux, 0, 987, 1, 1,1);
 }
 
 /**
@@ -240,6 +240,7 @@ static void Light_display_info(void *context)
   
   OLED_Clear_Line(2);
   OLED_Printf_Line(2, "Level: %s", light_desc);
+  OLED_Clear_Line(3);
   
   // 渐进式更新光照显示值，避免突变
   if (SensorData.light_data.lux > state->last_date_L)

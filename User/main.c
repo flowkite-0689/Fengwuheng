@@ -293,6 +293,7 @@ static void ESP8266_Main_Task(void *pvParameters)
 
         if ((xTaskGetTickCount() - Publish_tick) / 1000 >= 15 || first)
         {
+            printf("---->\r\n");
             // 发布主题
             Publish_tick = xTaskGetTickCount();
             first = 0;

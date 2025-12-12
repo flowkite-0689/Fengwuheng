@@ -243,7 +243,7 @@ static void PM25_display_info(void *context)
   // 显示空气质量等级
   OLED_Clear_Line(2);
   OLED_Printf_Line(2, "Quality: %s", PM25_GetLevelString(SensorData.pm25_data.level));
-  
+  OLED_Clear_Line(3);
   // 渐进式更新PM2.5显示值，避免突变
   uint16_t current_pm25 = (uint16_t)(SensorData.pm25_data.pm25_value);
   
