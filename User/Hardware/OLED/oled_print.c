@@ -187,7 +187,7 @@ void OLED_Clear_Rect(uint8_t x1, uint8_t y1, uint8_t x2, uint8_t y2)
  * @param max_val        : 最大值（如 500）
  * @param show_border    : 是否显示边框 (1=是, 0=否)
  * @param fill_mode      : 填充模式 (1=实心, 0=仅外框)
- * @param point_mode     : 画点模式
+ * @param point_mode     : 画点模式 (1=原, 0=反色)
  * @note 实际绘制区域 = [x, y] ~ [x+width-1, y+height-1]
  *       调用者可自行在外围画标签（如 "0C", "50C"）
  */

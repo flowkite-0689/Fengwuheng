@@ -183,7 +183,8 @@ static void index_display_time_info(void)
     OLED_Printf_Line(1, " %02d:%02d:%02d   H : %2d ",
                      g_index_state.hours,
                      g_index_state.minutes,
-                     g_index_state.seconds, SensorData.dht11_data.humi_int
+                     g_index_state.seconds,
+                      SensorData.dht11_data.humi_int
 
     );
 
@@ -199,18 +200,20 @@ static void index_display_time_info(void)
 static void index_display_status_info(void)
 {
 
-    // 计算一天中的分钟数
-    //    int time_of_day = (g_index_state.hours * 60 + g_index_state.minutes);
+    //温度·
+    OLED_DrawProgressBar(64,13,64,3, SensorData.dht11_data.temp_int,0,50,1,1,0);
+    //湿度
 
-    // OLED_DrawProgressBar(56,30,3,32,SensorData.dht11_data.temp_int,0,50,1,1,0);
+    OLED_DrawProgressBar(64, 29, 64, 3, SensorData.dht11_data.humi_int, 0, 100, 1, 1, 0);
+    //流明
 
-    // 绘制底部进度条：表示一天的时间进度
-    // OLED_DrawProgressBar(0, 27, 125, 2, time_of_day, 0, 24 * 60, 0, 1, 1);
-    // int lux = Light_GetLux();
-    // printf("lux = %d\n", lux);
-    // printf("root_menu init OK\n");
-    // 绘制右侧进度条：表示当前秒数进
-    OLED_DrawProgressBar(125, 0, 2, 64, g_index_state.seconds, 0, 60, 0, 1, 1);
-    // printf("PM25_ReadPM25 : %f\n",PM25_ReadPM25());
-    // printf("PM25_GetLevel : %d\n",PM25_GetLevel());
+    OLED_DrawProgressBar(64, 45, 64, 3, SensorData.light_data.lux, 0, 987, 1, 1, 0);
+
+    //PM2.5
+    OLED_DrawProgressBar(64, 61, 64, 3, SensorData.pm25_data.pm25_value, 0, 250, 1, 1, 0);
+
+
+    //秒onds进度条
+    OLED_DrawProgressBar(60, 0, 2, 64, g_index_state.seconds, 0, 60, 0, 1, 1);
+    
 }
