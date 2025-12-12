@@ -195,6 +195,7 @@ static void index_update_scroll(void)
     {
         state->scroll_step++;
 
+        OLED_Clear_Rect(0, 0, state->scroll_offset+8,64);
         // 根据方向更新偏移量，每次8像素
         if (state->scroll_direction == 1) // 向右
         {
@@ -224,7 +225,7 @@ static void index_update_scroll(void)
             }
             state->scroll_direction = 0;
             // 任何滚动完成后都强制清屏，确保内容正确显示
-            OLED_Clear();
+            // OLED_Clear();
             // printf("Scroll completed, final offset: %d\r\n", state->scroll_offset);
         }
     }
@@ -266,7 +267,7 @@ static void index_display_time_info(void)
     index_state_t *state = &g_index_state;
     uint8_t x_offset = state->scroll_offset; // 获取当前滚动偏移
 
-    if (x_offset > 0)
+    if (x_offset ==64)
     {
         
 
