@@ -54,7 +54,10 @@ menu_item_t *TandH_init(void)
  */
 void TandH_draw_function(void *context)
 {
-  TandH_state_t *state = (TandH_state_t *)context;
+
+  if (DHT11_ON)
+  {
+     TandH_state_t *state = (TandH_state_t *)context;
   if (state == NULL)
   {
     return;
@@ -66,6 +69,15 @@ void TandH_draw_function(void *context)
    
   
   OLED_Refresh_Dirty();
+  }
+  else
+  {
+    OLED_Printf_Line_32(0,"No Data");
+    OLED_Printf_Line_32(2,"dht11 off");
+    OLED_Refresh_Dirty();
+  }
+  
+ 
 }
 
 void TandH_key_handler(menu_item_t *item, uint8_t key_event)
@@ -80,11 +92,14 @@ void TandH_key_handler(menu_item_t *item, uint8_t key_event)
   case MENU_EVENT_KEY_UP:
     // KEY0 - 可以用来切换某些状态或进入特定功能
     printf("Index: KEY0 pressed\r\n");
+    DHT11_ON=1;
     break;
 
   case MENU_EVENT_KEY_DOWN:
     // KEY1 - 可以用来切换某些状态或进入特定功能
     printf("Index: KEY1 pressed\r\n");
+    OLED_Clear();
+    DHT11_ON=0;
     break;
 
   case MENU_EVENT_KEY_SELECT:

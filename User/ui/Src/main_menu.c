@@ -13,6 +13,8 @@
 #include "TandH.h"
 #include "setting_menu.h"
 #include "testlist_menu.h"
+#include "Light.h"
+#include "PM25.h"
 // ==================================
 // 图标数组
 // ==================================
@@ -63,6 +65,20 @@ menu_item_t *main_menu_init(void)
 
         TandH_page->content.custom.icon_data = gImage_TandH;
         menu_add_child(main_menu, TandH_page);
+    }
+
+    menu_item_t *Light_page = Light_init();
+    if (Light_page != NULL)
+    {
+        Light_page->content.custom.icon_data = gImage_lightQD;
+        menu_add_child(main_menu, Light_page);
+    }
+
+    menu_item_t *PM25_page = PM25_init();
+    if (PM25_page != NULL)
+    {
+        PM25_page->content.custom.icon_data = gImage_test; // 使用test图标作为占位符
+        menu_add_child(main_menu, PM25_page);
     }
 
 

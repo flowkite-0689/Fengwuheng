@@ -171,7 +171,9 @@ void index_on_exit(menu_item_t *item)
 
 static void index_display_time_info(void)
 {
-    // 显示日期和星期：第0行
+    if (DHT11_ON)
+    {
+         
     OLED_Printf_Line(0, "%02d/%02d/%02d  T : %2d.%1d",
                      g_index_state.year,
                      g_index_state.month,
@@ -179,7 +181,7 @@ static void index_display_time_info(void)
                      SensorData.dht11_data.temp_int,
                      SensorData.dht11_data.temp_deci);
 
-    // 显示时间：第1行，使用32像素字体
+   
     OLED_Printf_Line(1, " %02d:%02d:%02d   H : %2d ",
                      g_index_state.hours,
                      g_index_state.minutes,
@@ -187,6 +189,22 @@ static void index_display_time_info(void)
                       SensorData.dht11_data.humi_int
 
     );
+    }else
+    {
+        OLED_Printf_Line(0, "%02d/%02d/%02d  T : OFF",
+                     g_index_state.year,
+                     g_index_state.month,
+                     g_index_state.day
+                    );
+
+   
+    OLED_Printf_Line(1, " %02d:%02d:%02d   H : OFF ",
+                     g_index_state.hours,
+                     g_index_state.minutes,
+                     g_index_state.seconds);
+    }
+    
+   
 
     OLED_Printf_Line(2, " wifi:%s    L : %2d ",
 
