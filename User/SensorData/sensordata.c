@@ -5,7 +5,9 @@
 #include "stm32f10x_gpio.h"
 
 static TaskHandle_t sensordate_handle = NULL;
-
+extern uint8_t DHT11_ON = 1;
+extern uint8_t Light_ON = 1;
+extern uint8_t PM25_ON = 1;
 SensorData_TypeDef SensorData;
 
 void SensorData_Init(void)
@@ -67,7 +69,7 @@ static void SensorData_Task(void *pvParameters)
         //            SensorData.pm25_data.pm25_value, SensorData.pm25_data.level);
         // printf("-------------\r\n");
         
-        // 每2秒读取一次传感器数据
+        // 每3秒读取一次传感器数据
         vTaskDelay(pdMS_TO_TICKS(3000));
     }
 }
@@ -76,7 +78,7 @@ void SensorData_CreateTask(void)
 {
     xTaskCreate((TaskFunction_t)SensorData_Task,          /* 任务函数 */
                 (const char *)"SensorData",               /* 任务名称 */
-                (uint16_t)512,                            /* 任务堆栈大小 */
+                (uint16_t)620,                            /* 任务堆栈大小 */
                 (void *)NULL,                             /* 任务函数参数 */
                 (UBaseType_t)3,                           /* 任务优先级 */
                 (TaskHandle_t *)&sensordate_handle);       /* 任务控制句柄 */

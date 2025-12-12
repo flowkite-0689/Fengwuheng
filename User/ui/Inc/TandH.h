@@ -11,7 +11,6 @@
 
 typedef struct
 {
-  
    int16_t last_date_T;
    int16_t last_date_H;
    u8 result;
@@ -20,6 +19,9 @@ typedef struct
    uint32_t last_update; // 上次更新时间
 
 } TandH_state_t;
+
+// 声明静态状态变量，避免动态内存分配
+extern TandH_state_t g_tandh_state;
 
 /**
  * @brief 初始化温湿度页面

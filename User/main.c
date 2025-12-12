@@ -159,9 +159,6 @@ static void ESP8266_Main_Task(void *pvParameters)
     {
         retry_count++;
         printf("WiFi connection attempt %d/%d\r\n", retry_count, max_retries);
-        // OLED_Printf_Line(0, "WiFi Connecting");
-        // OLED_Printf_Line(1, "Attempt %d/%d", retry_count, max_retries);
-        // OLED_Refresh();
         
         if (ESP8266_Connect_WiFi("ElevatedNetwork.lt", "798798798") == 1) // Á¬½ÓWiFi
         {

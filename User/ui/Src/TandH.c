@@ -1,6 +1,8 @@
 #include "TandH.h"
-#include <stdlib.h>  // 添加stdlib.h用于动态内存管理
 #include "esp8266.h"
+
+// 定义静态状态变量，避免动态内存分配
+TandH_state_t g_tandh_state = {0};
 // ==================================
 // 静态函数声明
 // ==================================
@@ -134,27 +136,17 @@ void TandH_on_enter(menu_item_t *item)
 {
   printf("Enter TandH page\r\n");
   
-  // 分配状态数据结构
-  TandH_state_t *state = (TandH_state_t *)pvPortMalloc(sizeof(TandH_state_t));
-  if (state == NULL) {
-    printf("Error: Failed to allocate TandH state memory!\r\n");
-    return;
-  }
-  
-  printf("MALLOC: TandH_on_enter, state addr=%p, size=%d bytes\r\n", 
-         state, sizeof(TandH_state_t));
-  
-  // 初始化状态数据
-  TandH_init_sensor_data(state);
+  // 使用静态分配的状态数据，直接初始化
+  TandH_init_sensor_data(&g_tandh_state);
   
   // 传感器数据已在全局SensorData任务中初始化和读取
   
-  // 设置到菜单项上下文
-  item->content.custom.draw_context = state;
+  // 设置静态状态到菜单项上下文
+  item->content.custom.draw_context = &g_tandh_state;
   
   // 清屏并标记需要刷新
   OLED_Clear();
-  state->need_refresh = 1;
+  g_tandh_state.need_refresh = 1;
 }
 
 void TandH_on_exit(menu_item_t *item)
@@ -169,10 +161,7 @@ void TandH_on_exit(menu_item_t *item)
   // 清理传感器相关数据
   TandH_cleanup_sensor_data(state);
   
-  // 释放状态结构体本身
-  printf("FREE: TandH_on_exit, state addr=%p, size=%d bytes\r\n", 
-         state, sizeof(TandH_state_t));
-  vPortFree(state);
+  printf("TandH state cleaned up (no memory free needed)\r\n");
   
   // 清空指针，防止野指针
   item->content.custom.draw_context = NULL;
@@ -202,8 +191,6 @@ static void TandH_init_sensor_data(TandH_state_t *state)
     state->need_refresh = 1;
     state->last_update = xTaskGetTickCount();
     state->last_date_H = 0;
-     SensorData.dht11_data.temp_int = 50;
-     SensorData.dht11_data.humi_int = 100;
     state->result = 1;
     
     printf("TandH state initialized\r\n");
@@ -245,7 +232,7 @@ static void TandH_display_info(void *context)
       
      if (temp_tenth-state->last_date_T>=30)
      {
-        state->last_date_T+=70;
+        state->last_date_T+=10;
      }
      
         state->last_date_T++;
