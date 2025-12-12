@@ -35,6 +35,11 @@ typedef struct {
     uint32_t step_count;        // 步数
     uint8_t step_active;        // 步数激活状态
     
+    // 滚动状态
+    uint8_t scroll_offset;      // 滚动偏移量(0或64)
+    uint8_t scroll_direction;   // 滚动方向(0=无,1=右,2=左)
+    uint8_t scroll_step;        // 当前滚动步骤(0-8,每次8像素)
+    
     // 刷新标志
     uint8_t need_refresh;       // 需要刷新
     uint32_t last_update;       // 上次更新时间

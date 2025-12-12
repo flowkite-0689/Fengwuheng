@@ -16,7 +16,7 @@ void OLED_Printf(uint8_t x, uint8_t y, const char *format, ...)
 
     // 显示字符串
     OLED_ShowString(x, y, (uint8_t *)oled_buffer, 12, 1);
-
+// OLED_Set_Dirty_Area(0, y, 127, y + OLED_LINE_HEIGHT - 1);
     va_end(args);
 }
 
