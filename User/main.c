@@ -36,7 +36,7 @@ int main(void)
     debug_init();
     OLED_Init();
 
-    // OLED_Show_many_Tupian(tjbg, 8, 1);
+    OLED_Show_many_Tupian(tjbg, 8, 1);
 
     OLED_Refresh();
     Key_Init();
@@ -48,10 +48,10 @@ int main(void)
 
     BEEP_Buzz(10);
 
-    // OLED_Printf_Line(0, "STM32F103C8T6");
-    // OLED_Printf_Line(1, "FreeRTOS V20221201");
-    // OLED_Printf_Line(2, "fengwuheng");
-    // OLED_Printf_Line(3, "v1.0.0");
+    OLED_Printf_Line(0, "STM32F103C8T6");
+    OLED_Printf_Line(1, "FreeRTOS V20221201");
+    OLED_Printf_Line(2, "fengwuheng");
+    OLED_Printf_Line(3, "v1.0.0");
 
     printf("\r\n==================================\r\n");
     printf("||     STM32F103C8T6   \t\t||\r\n");
@@ -63,7 +63,7 @@ int main(void)
     printf("Light_ADC_Init OK\n");
 
     OLED_Refresh();
-    // Delay_s(1);
+    Delay_s(1);
     OLED_Clear();
 
     // printf("ESP8266初始化将在独立任务中进行...\r\n");

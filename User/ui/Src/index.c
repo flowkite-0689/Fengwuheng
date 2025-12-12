@@ -200,17 +200,17 @@ static void index_display_time_info(void)
 static void index_display_status_info(void)
 {
 
-    //温度·
-    OLED_DrawProgressBar(64,13,64,3, SensorData.dht11_data.temp_int,0,50,1,1,0);
+    // 温度·
+    OLED_DrawProgressBar(64,13,64,3, SensorData.dht11_data.temp_int,0,50,1,1,1);
     //湿度
 
-    OLED_DrawProgressBar(64, 29, 64, 3, SensorData.dht11_data.humi_int, 0, 100, 1, 1, 0);
+    OLED_DrawProgressBar(64, 29, 64, 3, SensorData.dht11_data.humi_int, 0, 100, 1, 1, 1);
     //流明
 
-    OLED_DrawProgressBar(64, 45, 64, 3, SensorData.light_data.lux, 0, 987, 1, 1, 0);
+    OLED_DrawProgressBar(64, 45, 64, 3, SensorData.light_data.lux, 0, 987, 1, 1, 1);
 
     //PM2.5
-    OLED_DrawProgressBar(64, 61, 64, 3, SensorData.pm25_data.pm25_value, 0, 250, 1, 1, 0);
+    OLED_DrawProgressBar(64, 61, 64, 3, SensorData.pm25_data.pm25_value, 0, 250, 1, 1, 1);
 
 
     //秒onds进度条

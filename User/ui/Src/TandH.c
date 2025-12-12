@@ -253,7 +253,7 @@ static void TandH_display_info(void *context)
     }else if (temp_tenth  < state->last_date_T)
     {
       
-        state->last_date_T-=17;
+        state->last_date_T--;
     
     }
       OLED_DrawTempBar_Line1(state->last_date_T);
