@@ -16,6 +16,9 @@
 
 extern uint8_t Server_connected=0;
 extern uint8_t wifi_connected = 0;
+//传输到云端的时间间隔
+uint16_t publish_delaytime = 15;
+
 extern uint8_t uart2_buffer[UART2_BUF_SIZE]; // uart2接收缓冲
 extern uint8_t uart2_rx_len;     // uart2接收长度
 

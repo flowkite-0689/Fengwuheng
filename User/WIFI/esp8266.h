@@ -14,6 +14,7 @@ extern uint8_t uart2_rx_len;     // uart2接收长度
 
 extern uint8_t wifi_connected;
 extern uint8_t Server_connected;
+extern uint16_t publish_delaytime;
 
 void ESP8266_Receive_Start(void);
 uint8_t ESP8266_Connect_WiFi(char *ssid, char *password);

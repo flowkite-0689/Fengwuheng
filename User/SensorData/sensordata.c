@@ -9,7 +9,7 @@ uint8_t DHT11_ON = 1;
 uint8_t Light_ON = 1;
 uint8_t PM25_ON = 1;
 SensorData_TypeDef SensorData;
-
+ uint16_t Sensordata_delaytime = 3000;
 void SensorData_Init(void)
 {
     DHT11_Init();
@@ -94,7 +94,7 @@ static void SensorData_Task(void *pvParameters)
         // printf("-------------\r\n");
 
         // 每3秒读取一次传感器数据
-        vTaskDelay(pdMS_TO_TICKS(3000));
+        vTaskDelay(pdMS_TO_TICKS(Sensordata_delaytime));
     }
 }
 

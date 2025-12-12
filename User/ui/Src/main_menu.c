@@ -16,6 +16,7 @@
 #include "Light_page.h"
 #include "PM25_page.h"
 #include "WiFiStatus.h"
+#include "ParamSetting.h"
 // ==================================
 // 图标数组
 // ==================================
@@ -98,6 +99,14 @@ menu_item_t *main_menu_init(void)
     {
         WiFiStatus_page->content.custom.icon_data = gImage_wifi;
         menu_add_child(main_menu, WiFiStatus_page);
+    }
+
+    // 添加参数设置页面
+    menu_item_t *ParamSetting_page = ParamSetting_init();
+    if (ParamSetting_page != NULL)
+    {
+        ParamSetting_page->content.custom.icon_data = gImage_setting;
+        menu_add_child(main_menu, ParamSetting_page);
     }
 
     return main_menu;

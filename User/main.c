@@ -432,7 +432,7 @@ static void ESP8266_Main_Task(void *pvParameters)
             ESP8266_TCP_Heartbeat();
         }
 
-        if ((xTaskGetTickCount() - Publish_tick) / 1000 >= 15 || first)
+        if ((xTaskGetTickCount() - Publish_tick) / 1000 >= publish_delaytime || first)
         {
             printf("---->\r\n");
             // 发布主题

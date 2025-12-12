@@ -17,6 +17,10 @@ typedef struct {
 } SensorData_TypeDef;
 extern SensorData_TypeDef SensorData;
 
+
+extern uint16_t Sensordata_delaytime; // 传感器读取间隔时间
+
+
 extern uint8_t DHT11_ON;
 extern uint8_t Light_ON;
 extern uint8_t PM25_ON;
