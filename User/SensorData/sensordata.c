@@ -37,7 +37,9 @@ static void SensorData_Task(void *pvParameters)
         // 读取DHT11温湿度数据
         if (DHT11_ON)
         {
+             taskENTER_CRITICAL();
             Read_DHT11(&SensorData.dht11_data);
+            taskEXIT_CRITICAL();
         }
 
         // {
@@ -54,9 +56,11 @@ static void SensorData_Task(void *pvParameters)
         // 配置ADC通道1 (PA1) 用于光照传感器
         if (Light_ON)
         {
+            taskENTER_CRITICAL();
             ADC_RegularChannelConfig(ADC1, ADC_Channel_1, 1, ADC_SampleTime_55Cycles5);
             uint16_t lux_value = Light_GetLux();
             SensorData.light_data.lux = lux_value;
+            taskEXIT_CRITICAL();
         }
 
         // printf("Light: %d lux\r\n", SensorData.light_data.lux);
@@ -77,9 +81,10 @@ static void SensorData_Task(void *pvParameters)
         // if (pm25_value < 0) pm25_value = 0;
         if (PM25_ON)
         {
-
+            taskENTER_CRITICAL();
             SensorData.pm25_data.pm25_value = PM25_ReadPM25(); // 四舍五入转换
             SensorData.pm25_data.level = PM25_GetLevelFromValue(SensorData.pm25_data.pm25_value);
+            taskEXIT_CRITICAL();
         }
 
         // SensorData.pm25_data.voltage = voltage;
