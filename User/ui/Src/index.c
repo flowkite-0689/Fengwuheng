@@ -265,9 +265,22 @@ static void index_display_time_info(void)
     index_state_t *state = &g_index_state;
     uint8_t x_offset = state->scroll_offset; // 获取当前滚动偏移
     
-    // 每次都清屏以确保内容正确显示
-    // OLED_Clear();
+    if (x_offset > 0)
+    {
+          //在页面左边64像素位置放图标
+          if (wifi_connected)
+          {
+            OLED_ShowPicture(-64+x_offset, 0,32, 32,gImage_wifi, 1);
+          }
+          
     
+    OLED_ShowPicture(-32+x_offset, 0,32, 32,gImage_lightQD, 1);
+    OLED_ShowPicture(-64+x_offset, 32,32, 32,gImage_TandH, 1);
+    OLED_ShowPicture(-32+x_offset, 32,32, 32,gImage_pm25, 1);
+    }
+    
+  
+
     // 应用滚动偏移显示内容
     if (DHT11_ON)
     {

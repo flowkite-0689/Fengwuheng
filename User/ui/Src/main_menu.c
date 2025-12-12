@@ -15,6 +15,7 @@
 #include "testlist_menu.h"
 #include "Light_page.h"
 #include "PM25_page.h"
+#include "WiFiStatus.h"
 // ==================================
 // 图标数组
 // ==================================
@@ -23,7 +24,8 @@ const unsigned char *main_menu_icons[] = {
     gImage_setting, // 设置
     gImage_TandH,   // 温湿度
     gImage_lightQD, // 光照强度
-    gImage_pm25     // 测试
+    gImage_pm25,    // PM2.5
+    gImage_wifi     // WiFi状态
 };
 
 const char *main_menu_names[] = {
@@ -83,13 +85,20 @@ menu_item_t *main_menu_init(void)
 
 
 
-    menu_item_t *setting_menu = setting_menu_init();
-    if (setting_menu != NULL)
-    {
-        setting_menu->content.icon.icon_data = gImage_setting;
-        menu_add_child(main_menu, setting_menu);
-    }
+    // menu_item_t *setting_menu = setting_menu_init();
+    // if (setting_menu != NULL)
+    // {
+    //     setting_menu->content.icon.icon_data = gImage_setting;
+    //     menu_add_child(main_menu, setting_menu);
+    // }
 
+    // 添加WiFi状态页面
+    menu_item_t *WiFiStatus_page = WiFiStatus_init();
+    if (WiFiStatus_page != NULL)
+    {
+        WiFiStatus_page->content.custom.icon_data = gImage_wifi;
+        menu_add_child(main_menu, WiFiStatus_page);
+    }
 
     return main_menu;
 }
