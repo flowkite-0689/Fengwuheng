@@ -13,10 +13,12 @@ void OLED_Printf(uint8_t x, uint8_t y, const char *format, ...)
 
     // 格式化字符串
     vsnprintf(oled_buffer, sizeof(oled_buffer), format, args);
-
+ OLED_Clear_Rect(x,y,127,y+OLED_LINE_HEIGHT);
     // 显示字符串
     OLED_ShowString(x, y, (uint8_t *)oled_buffer, 12, 1);
 // OLED_Set_Dirty_Area(0, y, 127, y + OLED_LINE_HEIGHT - 1);
+    
+
     va_end(args);
 }
 
@@ -44,7 +46,7 @@ void OLED_Printf_Line(uint8_t line, const char *format, ...)
     OLED_ShowString(0, y, (uint8_t *)oled_buffer, 12, 1);
 
     // 标记该行为脏区域，用于局部刷新
-    OLED_Set_Dirty_Area(0, y, 127, y + OLED_LINE_HEIGHT - 1);
+    OLED_Set_Dirty_Area(0, y, strlen(format)*12, y + OLED_LINE_HEIGHT - 1);
 
     va_end(args);
 }

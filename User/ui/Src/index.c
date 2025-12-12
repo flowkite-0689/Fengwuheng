@@ -39,10 +39,10 @@ menu_item_t *index_init(void)
     g_index_state.last_update = xTaskGetTickCount();
     g_index_state.step_count = 0;
     g_index_state.step_active = 0;
-    g_index_state.scroll_offset = 0; // 初始不滚动
+    g_index_state.scroll_offset = 64;
     g_index_state.scroll_direction = 0;
     g_index_state.scroll_step = 0;
-
+     
     // 初始化RTC
     MyRTC_Init();
 
@@ -78,7 +78,7 @@ void index_draw_function(void *context)
 
     // 更新时间信息
     index_update_time();
-    
+
     // 更新滚动状态
     index_update_scroll();
 
@@ -148,6 +148,7 @@ void index_update_time(void)
     g_index_state.year = RTC_data.year;
     strncpy(g_index_state.weekday, RTC_data.weekday, sizeof(g_index_state.weekday) - 1);
     g_index_state.weekday[sizeof(g_index_state.weekday) - 1] = '\0';
+   
 }
 
 index_state_t *index_get_state(void)
@@ -188,12 +189,12 @@ void index_on_exit(menu_item_t *item)
 static void index_update_scroll(void)
 {
     index_state_t *state = &g_index_state;
-    
+
     // 如果正在滚动，逐步更新
     if (state->scroll_direction != 0 && state->scroll_step < 8)
     {
         state->scroll_step++;
-        
+
         // 根据方向更新偏移量，每次8像素
         if (state->scroll_direction == 1) // 向右
         {
@@ -203,13 +204,13 @@ static void index_update_scroll(void)
         {
             state->scroll_offset = 64 - (state->scroll_step * 8);
         }
-        
+        index_refresh_display();
         // 调试信息
-        printf("Scroll step %d, direction %d, offset %d\r\n", 
-               state->scroll_step, state->scroll_direction, state->scroll_offset);
-        
+        // printf("Scroll step %d, direction %d, offset %d\r\n",
+        //        state->scroll_step, state->scroll_direction, state->scroll_offset);
+
         state->need_refresh = 1;
-        
+
         // 滚动完成
         if (state->scroll_step >= 8)
         {
@@ -224,7 +225,7 @@ static void index_update_scroll(void)
             state->scroll_direction = 0;
             // 任何滚动完成后都强制清屏，确保内容正确显示
             OLED_Clear();
-            printf("Scroll completed, final offset: %d\r\n", state->scroll_offset);
+            // printf("Scroll completed, final offset: %d\r\n", state->scroll_offset);
         }
     }
 }
@@ -236,14 +237,14 @@ static void index_update_scroll(void)
 static void index_scroll_to_offset(uint8_t target_offset)
 {
     index_state_t *state = &g_index_state;
-    
+
     // 检查是否需要滚动
     if (state->scroll_offset == target_offset)
     {
         printf("Already at target offset %d, no scroll needed\r\n", target_offset);
         return;
     }
-    
+
     // 设置滚动方向和步骤
     if (target_offset > state->scroll_offset)
     {
@@ -255,7 +256,7 @@ static void index_scroll_to_offset(uint8_t target_offset)
         state->scroll_direction = 2; // 向左
         printf("Starting scroll left from %d to %d\r\n", state->scroll_offset, target_offset);
     }
-    
+
     state->scroll_step = 0;
     state->need_refresh = 1;
 }
@@ -264,84 +265,123 @@ static void index_display_time_info(void)
 {
     index_state_t *state = &g_index_state;
     uint8_t x_offset = state->scroll_offset; // 获取当前滚动偏移
-    
+
     if (x_offset > 0)
     {
-          //在页面左边64像素位置放图标
-          if (wifi_connected)
-          {
-            OLED_ShowPicture(-64+x_offset, 0,32, 32,gImage_wifi, 1);
-          }
-          
-    
-    OLED_ShowPicture(-32+x_offset, 0,32, 32,gImage_lightQD, 1);
-    OLED_ShowPicture(-64+x_offset, 32,32, 32,gImage_TandH, 1);
-    OLED_ShowPicture(-32+x_offset, 32,32, 32,gImage_pm25, 1);
+        
+
+        // 在页面左边64像素位置放图标
+        if (wifi_connected)
+        {
+            OLED_ShowPicture(-64 + x_offset, 0, 32, 32, gImage_wifi, 1);
+        }
+        else
+        {
+            OLED_Clear_Rect(0, 0, 32, 32);
+        }
+
+        if (Light_ON)
+        {
+            OLED_ShowPicture(-32 + x_offset, 0, 32, 32, gImage_lightQD, 1);
+        }
+        else
+        {
+            OLED_Clear_Rect(32, 0, 62, 32);
+        }
+        if (DHT11_ON)
+        {
+            OLED_ShowPicture(-64 + x_offset, 32, 32, 32, gImage_TandH, 1);
+        }
+        else
+        {
+            printf("\n\n\n\n\n------\n------");
+            OLED_Clear_Rect(0, 32, 32, 64);
+        }
+        if (PM25_ON)
+        {
+            OLED_ShowPicture(-32 + x_offset, 32, 32, 32, gImage_pm25, 1);
+        }
+        else
+        {
+            OLED_Clear_Rect(32, 32, 62, 64);
+        }
+
+        OLED_Refresh_Dirty();
     }
-    
-  
 
-    // 应用滚动偏移显示内容
-    if (DHT11_ON)
-    {
-    OLED_Printf(x_offset, 0, "%02d/%02d/%02d  T : %2d.%1d",
-                     g_index_state.year,
-                     g_index_state.month,
-                     g_index_state.day,
-                     SensorData.dht11_data.temp_int,
-                     SensorData.dht11_data.temp_deci);
+    OLED_Printf(x_offset, 0, "%02d/%02d/%02d",
+                g_index_state.year,
+                g_index_state.month,
+                g_index_state.day);
 
-   
-    OLED_Printf(x_offset, 16, " %02d:%02d:%02d   H : %2d ",
-                     g_index_state.hours,
-                     g_index_state.minutes,
-                     g_index_state.seconds,
-                      SensorData.dht11_data.humi_int
+    OLED_Printf(x_offset, 16, " %02d:%02d:%02d",
+                g_index_state.hours,
+                g_index_state.minutes,
+                g_index_state.seconds
 
     );
-    }else
-    {
-        OLED_Printf(x_offset, 0, "%02d/%02d/%02d  T : OFF",
-                     g_index_state.year,
-                     g_index_state.month,
-                     g_index_state.day
-                    );
 
    
-    OLED_Printf(x_offset, 16, " %02d:%02d:%02d   H : OFF ",
-                     g_index_state.hours,
-                     g_index_state.minutes,
-                     g_index_state.seconds);
-    }
+        OLED_Printf(x_offset, 32, " wifi:%s   ",
+
+                    wifi_connected ? "OK" : "NO"
+            );
     
-   
-    if (Light_ON)
-    {
-         OLED_Printf(x_offset, 32, " wifi:%s    L : %2d ",
 
-                     wifi_connected ? "OK" : "NO",
-                     SensorData.light_data.lux);
-    }else
-    {
-        OLED_Printf(x_offset, 32, " wifi:%s    L : OFF ",
-
-                     wifi_connected ? "OK" : "NO");
-
-    }
     
-   if (PM25_ON)
-   {
-     OLED_Printf(x_offset, 48, "Server:%s   P : %3.1f ",
-                     Server_connected ? "OK" : "NO",
-                     SensorData.pm25_data.pm25_value);
-   }else
-   {
-     OLED_Printf(x_offset, 48, "Server:%s   P : OFF ",
-                     Server_connected ? "OK" : "NO");
+        OLED_Printf(x_offset, 48, "Server:%s ",
+                    Server_connected ? "OK" : "NO"
+                );
+   
+        
+   
+    // 应用滚动偏移显示内容
 
-   }
+    if (x_offset == 0)
+    {
+        if (DHT11_ON)
+        {
+
+            OLED_Printf(64, 0, " T : %2d.%1d",
+                        SensorData.dht11_data.temp_int,
+                        SensorData.dht11_data.temp_deci);
+            OLED_Printf(64, 16, " H : %2d",
+                        SensorData.dht11_data.humi_int);
+        }
+        else
+        {
+            OLED_Printf(64, 0, " T : OFF");
+
+            OLED_Printf(64, 16, " H : OFF ");
+        }
+    //light
+     if (Light_ON)
+    {
+        OLED_Printf(64, 32, " L : %2d ",
+
+                
+                    SensorData.light_data.lux);
+    }
+    else
+    {
+        OLED_Printf(64, 32, " L : OFF ");
+    }
+    //pm25
+    if (PM25_ON)
+    {
+        OLED_Printf(64, 48, " P : %3.1f ",
+                   
+                    SensorData.pm25_data.pm25_value);
+    }
+    else
+    {
+        OLED_Printf(64, 48, " P : OFF ");
+    }
+    }
+
    
-   
+
+    
 }
 
 static void index_display_status_info(void)
@@ -349,6 +389,6 @@ static void index_display_status_info(void)
     index_state_t *state = &g_index_state;
     uint8_t x_offset = state->scroll_offset; // 获取当前滚动偏移
 
-    //秒onds进度条
+    // 秒onds进度条
     OLED_DrawProgressBar(60 + x_offset, 0, 2, 64, g_index_state.seconds, 0, 60, 0, 1, 1);
 }

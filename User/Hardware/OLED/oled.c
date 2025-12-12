@@ -515,6 +515,7 @@ void OLED_ShowPicture(uint8_t x, uint8_t y, uint8_t sizex, uint8_t sizey, const 
 			y = y0;
 		}
 	}
+	OLED_Set_Dirty_Area(x,y,x+sizex,y+sizey);
 }
 // OLED initialization
 void OLED_Init(void)

@@ -905,7 +905,7 @@ void menu_task(void *pvParameters)
 
         // 定时刷新显示
         if (g_menu_sys.need_refresh ||
-            (xTaskGetTickCount() - g_menu_sys.last_refresh_time) > pdMS_TO_TICKS(100))
+            (xTaskGetTickCount() - g_menu_sys.last_refresh_time) > pdMS_TO_TICKS(50))
         {
             menu_refresh_display();
         }
