@@ -8,6 +8,10 @@ static TaskHandle_t sensordate_handle = NULL;
 uint8_t DHT11_ON = 1;
 uint8_t Light_ON = 1;
 uint8_t PM25_ON = 1;
+
+uint8_t DHT11_ERR = 0 ;
+uint8_t Light_ERR = 0 ;
+uint8_t PM25_ERR = 0 ;
 SensorData_TypeDef SensorData;
  uint16_t Sensordata_delaytime = 3000;
 void SensorData_Init(void)
@@ -37,8 +41,13 @@ static void SensorData_Task(void *pvParameters)
         // 读取DHT11温湿度数据
         if (DHT11_ON)
         {
-             taskENTER_CRITICAL();
+            taskENTER_CRITICAL();
             Read_DHT11(&SensorData.dht11_data);
+            if (SensorData.dht11_data.temp_deci==0&&SensorData.dht11_data.humi_int==0&&SensorData.dht11_data.temp_int==0)
+            {
+                DHT11_ERR=1;
+            }
+            
             taskEXIT_CRITICAL();
         }
 
@@ -82,7 +91,13 @@ static void SensorData_Task(void *pvParameters)
         if (PM25_ON)
         {
             taskENTER_CRITICAL();
+
             SensorData.pm25_data.pm25_value = PM25_ReadPM25(); // 四舍五入转换
+            if (SensorData.pm25_data.pm25_value==0.0)
+            {
+                PM25_ERR=1;
+            }
+            
             SensorData.pm25_data.level = PM25_GetLevelFromValue(SensorData.pm25_data.pm25_value);
             taskEXIT_CRITICAL();
         }

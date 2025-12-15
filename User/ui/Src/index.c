@@ -281,7 +281,7 @@ static void index_display_time_info(void)
             OLED_Clear_Rect(0, 0, 32, 32);
         }
 
-        if (Light_ON)
+        if (Light_ON&&!Light_ERR)
         {
             OLED_ShowPicture(-32 + x_offset, 0, 32, 32, gImage_lightQD, 1);
         }
@@ -289,7 +289,7 @@ static void index_display_time_info(void)
         {
             OLED_Clear_Rect(32, 0, 62, 32);
         }
-        if (DHT11_ON)
+        if (DHT11_ON&&!DHT11_ERR)
         {
             OLED_ShowPicture(-64 + x_offset, 32, 32, 32, gImage_TandH, 1);
         }
@@ -297,7 +297,7 @@ static void index_display_time_info(void)
         {
             OLED_Clear_Rect(0, 32, 32, 64);
         }
-        if (PM25_ON)
+        if (PM25_ON&&!PM25_ERR)
         {
             OLED_ShowPicture(-32 + x_offset, 32, 32, 32, gImage_pm25, 1);
         }
@@ -339,7 +339,7 @@ static void index_display_time_info(void)
 
     if (x_offset == 0)
     {
-        if (DHT11_ON)
+        if (DHT11_ON&&!DHT11_ERR)
         {
 
             OLED_Printf(64, 0, " T : %2d.%1d",
@@ -350,12 +350,12 @@ static void index_display_time_info(void)
         }
         else
         {
-            OLED_Printf(64, 0, " T : OFF");
+            OLED_Printf(64, 0, " T : %s",DHT11_ERR?"ERR":"OFF");
 
-            OLED_Printf(64, 16, " H : OFF ");
+            OLED_Printf(64, 16, " H : %s",DHT11_ERR?"ERR":"OFF");
         }
     //light
-     if (Light_ON)
+     if (Light_ON&&!Light_ERR)
     {
         OLED_Printf(64, 32, " L : %2d ",
 
@@ -364,10 +364,10 @@ static void index_display_time_info(void)
     }
     else
     {
-        OLED_Printf(64, 32, " L : OFF ");
+        OLED_Printf(64, 32, " L : %s ",Light_ERR?"ERR":"OFF");
     }
     //pm25
-    if (PM25_ON)
+    if (PM25_ON&&!PM25_ERR)
     {
         OLED_Printf(64, 48, " P : %3.1f ",
                    
@@ -375,7 +375,7 @@ static void index_display_time_info(void)
     }
     else
     {
-        OLED_Printf(64, 48, " P : OFF ");
+        OLED_Printf(64, 48, " P : %s ",PM25_ERR?"ERR":"OFF");
     }
     }
 
